@@ -1,0 +1,228 @@
+/* src/components/GestionMedecins.css */
+
+/* Container styling */
+.py-4 {
+  padding: 3rem; /* Increased padding for a larger container */
+  background: linear-gradient(135deg, #ffffff, #f3f3f5); /* Matching Connexion gradient */
+  min-height: 100vh;
+}
+
+/* Heading styling */
+h2.mb-4 {
+  color: #1e3a8a; /* Matching Connexion's dark blue */
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 3rem; /* Increased margin */
+  font-size: 3rem; /* Increased font size for larger heading */
+}
+
+.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+h4 {
+  color: #495057;
+  font-weight: 600;
+  margin-bottom: 2rem; /* Increased margin */
+  border-bottom: 2px solid #26a69a; /* Changed to teal to match button */
+  padding-bottom: 0.75rem;
+  font-size: 1.8rem; /* Increased font size */
+}
+
+/* Alert styling */
+.alert {
+  border-radius: 10px; /* Slightly larger radius */
+  font-size: 1.1rem; /* Increased font size */
+  margin-bottom: 2rem; /* Increased margin */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
+}
+
+.alert-success {
+  background-color: rgba(212, 237, 218, 0.9); /* Slightly transparent */
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+  background-color: rgba(248, 215, 218, 0.9); /* Slightly transparent */
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Button container and form styling */
+.mb-4 {
+  background-color: rgba(255, 255, 255, 0.95); /* Frosted glass effect */
+  backdrop-filter: blur(10px); /* Matching Connexion */
+  padding: 2rem; /* Increased padding */
+  border-radius: 12px; /* Larger radius */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease;
+}
+
+.mb-4:hover {
+  transform: translateY(-5px); /* Matching Connexion hover effect */
+}
+
+/* Form inputs */
+.form-group.mb-3 {
+  margin-bottom: 2rem; /* Increased margin */
+}
+
+.form-label {
+  font-weight: 600;
+  color: #1f2937; /* Matching Connexion */
+  font-size: 1.2rem; /* Increased font size */
+  margin-bottom: 1rem; /* Increased margin */
+}
+
+.form-control {
+  border-radius: 10px; /* Larger radius */
+  border: 1px solid #ced4da;
+  padding: 1rem 1.5rem; /* Increased padding */
+  font-size: 1.2rem; /* Increased font size */
+  background: rgba(255, 255, 255, 0.7); /* Matching Connexion */
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.form-control:focus {
+  border-color: #26a69a; /* Teal to match button */
+  box-shadow: 0 0 0 0.3rem rgba(38, 166, 154, 0.25); /* Matching focus ring */
+}
+
+.form-control.is-invalid {
+  border-color: #dc3545;
+}
+
+.invalid-feedback {
+  font-size: 1rem; /* Increased font size */
+  color: #dc3545;
+}
+
+/* Button styling */
+.btn-primary {
+  background-color: #26a69a; /* Teal to match Connexion button */
+  border-color: #26a69a;
+  padding: 1rem 2rem; /* Increased padding */
+  font-size: 1.4rem; /* Increased font size */
+  border-radius: 10px; /* Larger radius */
+  text-transform: uppercase; /* Matching Connexion */
+  letter-spacing: 1px; /* Matching Connexion */
+  transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #1e7e6c; /* Darker teal */
+  border-color: #1e7e6c;
+  transform: translateY(-3px); /* Increased lift */
+  box-shadow: 0 6px 15px rgba(38, 166, 154, 0.4); /* Matching shadow */
+}
+
+.btn-primary:disabled {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  cursor: not-allowed;
+}
+
+/* Table styling */
+.table {
+  background-color: rgba(255, 255, 255, 0.95); /* Frosted glass effect */
+  backdrop-filter: blur(10px); /* Matching Connexion */
+  border-radius: 12px; /* Larger radius */
+  overflow: hidden;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
+  margin-top: 1.5rem; /* Increased margin */
+}
+
+.table thead {
+  background-color: #26a69a; /* Teal to match button */
+  color: #ffffff;
+}
+
+.table th {
+  font-weight: 700;
+  padding: 1.5rem; /* Increased padding */
+  text-align: center;
+  font-size: 1.2rem; /* Increased font size */
+}
+
+.table tbody tr {
+  transition: background-color 0.2s ease-in-out;
+}
+
+.table tbody tr:hover {
+  background-color: #e9ecef; /* Slightly darker hover effect */
+}
+
+.table td {
+  padding: 1.5rem; /* Increased padding */
+  vertical-align: middle;
+  font-size: 1.1rem; /* Increased font size */
+  color: #495057;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f8f9fa;
+}
+
+.table-bordered {
+  border: 1px solid #dee2e6;
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #dee2e6;
+}
+
+/* Loading and empty states */
+.text-center {
+  color: #6c757d;
+  font-style: italic;
+  font-size: 1.2rem; /* Increased font size */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .py-4 {
+    padding: 1.5rem; /* Adjusted for smaller screens */
+  }
+
+  h2.mb-4 {
+    font-size: 2.5rem; /* Adjusted for smaller screens */
+  }
+
+  h4 {
+    font-size: 1.5rem; /* Adjusted for smaller screens */
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 0.75rem 1.5rem; /* Adjusted for smaller screens */
+    font-size: 1.2rem; /* Adjusted for smaller screens */
+  }
+
+  .mb-4 {
+    padding: 1.5rem; /* Adjusted for smaller screens */
+  }
+
+  .table th,
+  .table td {
+    padding: 1rem; /* Adjusted for smaller screens */
+    font-size: 1rem; /* Adjusted for smaller screens */
+  }
+
+  .form-control {
+    padding: 0.75rem 1rem; /* Adjusted for smaller screens */
+    font-size: 1rem; /* Adjusted for smaller screens */
+  }
+
+  .form-label {
+    font-size: 1rem; /* Adjusted for smaller screens */
+  }
+
+  .alert {
+    font-size: 1rem; /* Adjusted for smaller screens */
+  }
+}

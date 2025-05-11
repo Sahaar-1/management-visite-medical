@@ -1,0 +1,120 @@
+/* Modern Sidebar Styling */
+.sidebar {
+  height: 100vh;
+  width: 260px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: linear-gradient(180deg, #2c4761 0%, #1a252f 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 0;
+}
+
+.sidebar-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 0;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-menu li {
+  margin: 5px 0;
+  transition: all 0.2s ease;
+}
+
+.sidebar-menu li a,
+.sidebar-menu li .sidebar-logout-btn {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.sidebar-menu li .sidebar-logout-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.sidebar-menu li a:hover,
+.sidebar-menu li .sidebar-logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.sidebar-menu li.active a {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-left: 4px solid #3498db;
+}
+
+.sidebar-menu li a svg,
+.sidebar-menu li .sidebar-logout-btn svg {
+  margin-right: 15px;
+  font-size: 1.2rem;
+  min-width: 20px;
+}
+
+/* Main content adjustment to accommodate sidebar */
+.main-content {
+  margin-left: 260px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+/* For mobile responsiveness */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 70px;
+  }
+  
+  .sidebar-header h3 {
+    display: none;
+  }
+  
+  .sidebar-menu li a span {
+    display: none;
+  }
+  
+  .sidebar-menu li a svg {
+    margin-right: 0;
+    font-size: 1.5rem;
+  }
+  
+  .main-content {
+    margin-left: 70px;
+  }
+}
