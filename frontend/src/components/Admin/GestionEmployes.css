@@ -1,0 +1,37 @@
+/* Style pour les boutons d'action - même style que la page rendez-vous */
+.btn-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: 1px solid #dee2e6;
+  margin: 0 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #1e3a8a; /* Couleur bleue comme dans la page rendez-vous */
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-action:hover {
+  background-color: #1e3a8a;
+  color: white;
+  border-color: #1e3a8a;
+}
+
+.btn-action i {
+  font-size: 14px;
+}
+
+/* Style pour le bouton Ajouter */
+.btn-ajouter {
+  background-color: #1e3a8a;
+  border-color: #1e3a8a;
+  color: white;
+}
+
+.btn-ajouter:hover {
+  background-color: #152a62;
+  border-color: #152a62;
+}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Table, Card, Form, Button, Modal } from 'react-bootstrap';
 import api from '../../utils/axiosConfig';
-
+import './listemploy.css';
 const ListeEmployes = () => {
   const [employes, setEmployes] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');

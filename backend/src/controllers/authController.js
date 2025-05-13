@@ -350,7 +350,141 @@ const authController = {
         error: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
     }
-  }
+  },
+
+  // Mettre à jour un médecin
+  mettreAJourMedecin: async (req, res) => {
+    try {
+      // Vérifier que l'utilisateur est un administrateur
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({ 
+          message: 'Accès refusé. Seuls les administrateurs peuvent modifier les médecins.' 
+        });
+      }
+
+      const { id } = req.params;
+      const { nom, prenom, email, specialite, telephone } = req.body;
+
+      // Vérifier si le médecin existe
+      const medecin = await User.findOne({ _id: id, role: 'medecin' });
+      if (!medecin) {
+        return res.status(404).json({ message: 'Médecin non trouvé' });
+      }
+
+      // Vérifier si l'email est déjà utilisé par un AUTRE utilisateur
+      if (email && email !== medecin.email) {
+        const emailExiste = await User.findOne({ email, _id: { $ne: id } });
+        if (emailExiste) {
+          return res.status(400).json({ message: 'Cet email est déjà utilisé par un autre utilisateur' });
+        }
+      }
+
+      // Mettre à jour les champs
+      if (nom) medecin.nom = nom;
+      if (prenom) medecin.prenom = prenom;
+      if (email) medecin.email = email;
+      if (specialite) medecin.specialite = specialite;
+      if (telephone) medecin.telephone = telephone;
+
+      // Sauvegarder les modifications
+      await medecin.save();
+
+      res.json({
+        message: 'Médecin mis à jour avec succès',
+        medecin: {
+          _id: medecin._id,
+          nom: medecin.nom,
+          prenom: medecin.prenom,
+          email: medecin.email,
+          specialite: medecin.specialite,
+          telephone: medecin.telephone
+        }
+      });
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du médecin:', error);
+      res.status(500).json({ 
+        message: 'Erreur lors de la mise à jour du médecin', 
+        error: error.message 
+      });
+    }
+  },
+
+  // Suppression d'un médecin
+  supprimerMedecin: async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Vérifier que l'utilisateur est un administrateur
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({ 
+          message: 'Accès refusé. Seuls les administrateurs peuvent supprimer les médecins.' 
+        });
+      }
+      
+      // Vérifier que le médecin existe
+      const medecin = await User.findOne({ _id: id, role: 'medecin' });
+      if (!medecin) {
+        return res.status(404).json({ message: 'Médecin non trouvé' });
+      }
+      
+      // Supprimer le médecin
+      await User.findByIdAndDelete(id);
+      
+      res.json({ message: 'Médecin supprimé avec succès' });
+    } catch (error) {
+      console.error('Erreur lors de la suppression du médecin:', error);
+      res.status(500).json({ 
+        message: 'Erreur lors de la suppression du médecin', 
+        error: error.message 
+      });
+    }
+  },
+
+  // Réinitialisation du mot de passe d'un médecin
+  reinitialiserMotDePasse: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { nouveauMotDePasse, confirmationMotDePasse } = req.body;
+      
+      // Vérifier que l'utilisateur est un administrateur
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({ 
+          message: 'Accès refusé. Seuls les administrateurs peuvent réinitialiser les mots de passe.' 
+        });
+      }
+      
+      // Vérifier que le médecin existe
+      const medecin = await User.findOne({ _id: id, role: 'medecin' });
+      if (!medecin) {
+        return res.status(404).json({ message: 'Médecin non trouvé' });
+      }
+      
+      // Vérifier que les mots de passe correspondent
+      if (nouveauMotDePasse !== confirmationMotDePasse) {
+        return res.status(400).json({ message: 'Les mots de passe ne correspondent pas' });
+      }
+      
+      // Vérifier que le mot de passe est assez long
+      if (nouveauMotDePasse.length < 6) {
+        return res.status(400).json({ message: 'Le mot de passe doit contenir au moins 6 caractères' });
+      }
+      
+      // Hacher le nouveau mot de passe
+      const salt = await bcrypt.genSalt(10);
+      const motDePasseHache = await bcrypt.hash(nouveauMotDePasse, salt);
+      
+      // Mettre à jour le mot de passe du médecin
+      await User.findByIdAndUpdate(id, { motDePasse: motDePasseHache });
+      
+      res.json({ message: 'Mot de passe réinitialisé avec succès' });
+    } catch (error) {
+      console.error('Erreur lors de la réinitialisation du mot de passe:', error);
+      res.status(500).json({ 
+        message: 'Erreur lors de la réinitialisation du mot de passe', 
+        error: error.message 
+      });
+    }
+  },
 };
 
 module.exports = authController;

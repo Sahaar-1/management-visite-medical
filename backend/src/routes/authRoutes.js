@@ -37,5 +37,9 @@ router.get('/medecins/connexions',
   authController.getMedecinConnexions
 );
 
+// Routes pour la gestion des médecins (admin uniquement)
+router.put('/medecins/:id', authMiddleware.verifierToken, authController.mettreAJourMedecin);
+router.delete('/medecins/:id', authMiddleware.verifierToken, authController.supprimerMedecin);
+router.post('/medecins/:id/reset-password', authMiddleware.verifierToken, authController.reinitialiserMotDePasse);
 module.exports = router;
 

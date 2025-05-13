@@ -4,6 +4,7 @@ import Connexion from '../components/Auth/Connexion';
 import Profil from '../components/Auth/Profil';
 import GestionMedecins from '../components/Admin/GestionMedecins';
 import GestionEmployes from '../components/Admin/GestionEmployes';
+import GestionRendezVous from '../components/Admin/GestionRendezVous';
 import TableauDeBordAdmin from '../components/Admin/TableauDeBordAdmin';
 import ListeEmployes from '../components/Medecin/ListeEmployes';
 import ProtectedRoute from '../components/Auth/ProtectedRoute';
@@ -38,6 +39,10 @@ const routes = [
           {
             path: 'employes',
             element: <GestionEmployes />
+          },
+          {
+            path: 'rendez-vous',
+            element: <GestionRendezVous />
           }
         ]
       },

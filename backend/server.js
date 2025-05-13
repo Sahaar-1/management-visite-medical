@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const { createDefaultAdmin } = require('./src/config/initDB');
+const rendezVousRoutes = require('./src/routes/rendezVousRoutes');
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -32,6 +33,7 @@ mongoose.plugin(mongoosePaginate);
 
 // Routes
 const authRoutes = require('./src/routes/authRoutes');
+const employeRoutes = require('./src/routes/employeRoutes'); // Ensure this is included
 // Commenté pour se concentrer uniquement sur l'authentification
 // const employeRoutes = require('./src/routes/employeRoutes');
 // const serviceRoutes = require('./src/routes/serviceRoutes');
@@ -44,10 +46,10 @@ app.get('/api', (req, res) => {
 // Routes de l'API avec préfixe /api
 app.use('/api/auth', authRoutes);
 // Commenté pour se concentrer uniquement sur l'authentification
-// app.use('/api/employes', employeRoutes);
+app.use('/api', employeRoutes);
 // app.use('/api/services', serviceRoutes);
 // app.use('/api/notifications', require('./src/routes/notificationRoutes'));
-
+app.use('/api/rendez-vous', rendezVousRoutes);
 // Middleware pour gérer CORS
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');

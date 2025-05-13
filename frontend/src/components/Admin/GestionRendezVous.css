@@ -1,0 +1,270 @@
+/* Variables de couleurs */
+:root {
+  --primary-color: #2e7d32;
+  --secondary-color: #4caf50;
+  --light-color: #f1f8e9;
+  --white-color: #ffffff;
+  --border-color: #c8e6c9;
+  --text-color: #212121;
+  --text-muted: #757575;
+}
+
+/* Style général */
+.rendez-vous-container {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.page-title {
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+/* Bouton d'ajout */
+.btn-add-rdv {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-add-rdv:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  background-color: #1b5e20;
+  border-color: #1b5e20;
+}
+
+/* Cartes */
+/* Style pour les cartes par année */
+.card {
+  margin-bottom: 1.5rem;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+  background-color: var(--light-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 1.25rem;
+}
+
+.card-header h4 {
+  color: var(--primary-color);
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.card-header h4 i {
+  margin-right: 0.5rem;
+}
+
+/* Animation pour les cartes */
+.card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  padding: 1rem;
+  border-bottom: none;
+}
+
+/* Tableau des rendez-vous */
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+  color: var(--primary-color);
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-color);
+  padding: 1rem 0.75rem;
+}
+
+.table tbody td {
+  padding: 1rem 0.75rem;
+  vertical-align: middle;
+  border-color: #f1f1f1;
+}
+
+.table tbody tr:hover {
+  background-color: var(--light-color);
+}
+
+/* Badges */
+.badge {
+  font-weight: 500;
+  padding: 0.5em 0.8em;
+}
+
+/* Boutons d'action */
+.btn-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0 0.2rem;
+}
+
+/* État vide */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+}
+
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #ccc;
+}
+
+/* Modal */
+.rdv-modal .modal-content {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.rdv-modal .modal-header {
+  background-color: var(--primary-color);
+  color: white;
+  border-bottom: none;
+}
+
+.rdv-modal .modal-title {
+  font-weight: 600;
+}
+
+.rdv-modal .modal-footer {
+  border-top: 1px solid #f1f1f1;
+}
+
+.rdv-modal .close {
+  color: white;
+}
+
+/* Liste des employés */
+.employes-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+.list-group-item {
+  border-color: #f1f1f1;
+  transition: background-color 0.2s;
+}
+
+.list-group-item:hover {
+  background-color: #f8f9fa;
+}
+
+.list-group-item.active {
+  background-color: var(--light-color);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+/* Employés sélectionnés */
+.selected-employe-tag {
+  background-color: var(--light-color);
+  border: 1px solid var(--border-color);
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Style pour les employés déjà assignés */
+.list-group-item.disabled {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.badge.bg-warning {
+  background-color: #ffc107 !important;
+  color: #212529;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.selected-employe-tag {
+  background-color: #e9f5ff;
+  border: 1px solid #b8daff;
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  margin: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-remove {
+  background: none;
+  border: none;
+  color: #dc3545;
+  margin-left: 0.5rem;
+  padding: 0;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.employes-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+.list-group-item {
+  border-color: #f1f1f1;
+  transition: background-color 0.2s;
+}
+
+.list-group-item:hover {
+  background-color: #f8f9fa;
+}
+
+.list-group-item.active {
+  background-color: var(--light-color);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+/* Formulaires */
+.form-control {
+  border-color: #eee;
+  padding: 0.75rem;
+  border-radius: 6px;
+}
+
+.form-control:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+}
+
+.form-label {
+  color: var(--primary-color);
+  font-weight: 600;
+}

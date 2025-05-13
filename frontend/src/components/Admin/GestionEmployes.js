@@ -1,51 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Table, Button, Modal, Form, Row, Col, Card } from 'react-bootstrap';
 import api from '../../utils/axiosConfig';
-
+import './GestionEmployes.css'; // Importez le fichier de styles CSS
 const GestionEmployes = () => {
   const [employes, setEmployes] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
   const [selectedEmploye, setSelectedEmploye] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [serviceFiltre, setServiceFiltre] = useState('');
-  const [anneeFiltre, setAnneeFiltre] = useState(new Date().getFullYear());
+  const [entiteFiltre, setEntiteFiltre] = useState(''); // Filter for entities
   const [formData, setFormData] = useState({
     matricule: '',
     nom: '',
     prenom: '',
     entite: '',
-    service: '',
-    dateVisite2024: '',
-    dateVisite2025: '',
-    eligibilite: '1',
-    aptitude: 'APTE',
-    dateHC: '',
-    aptitudeHC: 'APTE',
-    dateTH: '',
-    aptitudeTH: 'APTE',
-    dateEC: '',
-    aptitudeEC: 'APTE',
-    statut: 'Non faite',
-    observations: {
-      aptitudeGenerale: '',
-      aptitudeHC: '',
-      aptitudeTH: '',
-      aptitudeEC: ''
-    }
   });
+
+  const entities = ['OIG/B', 'OIG/B/E', 'OIG/B/L', 'OIG/B/M', 'OIG/B/P', 'OIG/B/M/C'];
+
   const loadEmployes = async () => {
     try {
       setLoading(true);
       setError(null);
       const response = await api.get('/employes');
-      
-      if (!response.data) {
-        throw new Error('Aucune donnée reçue du serveur');
-      }
-      
       const employeesData = Array.isArray(response.data) ? response.data : [];
-      console.log('Employés chargés:', employeesData); // Debug log
       setEmployes(employeesData);
     } catch (error) {
       console.error('Erreur lors du chargement des employés:', error);
@@ -55,36 +34,26 @@ const GestionEmployes = () => {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     loadEmployes();
   }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setError(null);
       if (selectedEmploye) {
-        const response = await api.put(`/employes/${selectedEmploye._id}`, formData);
-        console.log('Update response:', response.data);
+        await api.put(`/employes/${selectedEmploye._id}`, formData);
       } else {
-        const response = await api.post('/employes', formData);
-        console.log('Create response:', response.data);
+        await api.post('/employes', formData);
       }
       await loadEmployes();
       setShowModal(false);
       resetForm();
     } catch (error) {
       console.error('Erreur lors de l\'enregistrement:', error);
-      const errorMessage = error.response?.data?.message || error.message;
-      setError(`Erreur lors de l'enregistrement: ${errorMessage}`);
-      // Log additional error details for debugging
-      if (error.response) {
-        console.log('Error response:', {
-          data: error.response.data,
-          status: error.response.status,
-          headers: error.response.headers
-        });
-      }
+      setError(`Erreur lors de l'enregistrement: ${error.response?.data?.message || error.message}`);
     }
   };
 
@@ -101,36 +70,20 @@ const GestionEmployes = () => {
 
   const handleEdit = (employe) => {
     setSelectedEmploye(employe);
-    
-    // Récupérer les observations existantes ou initialiser avec des chaînes vides
-    const observations = {
-      aptitudeGenerale: employe.observations?.aptitudeGenerale || '',
-      aptitudeHC: employe.observations?.aptitudeHC || '',
-      aptitudeTH: employe.observations?.aptitudeTH || '',
-      aptitudeEC: employe.observations?.aptitudeEC || ''
-    };
-    
     setFormData({
       matricule: employe.matricule,
       nom: employe.nom,
       prenom: employe.prenom,
       entite: employe.entite,
-      service: employe.service || '',
-      dateVisite2024: employe.dateVisite2024 || '',
-      dateVisite2025: employe.dateVisite2025 || '',
-      eligibilite: employe.eligibilite || '1',
-      aptitude: employe.aptitude || 'APTE',
-      dateHC: employe.dateHC || '',
-      aptitudeHC: employe.aptitudeHC || 'APTE',
-      dateTH: employe.dateTH || '',
-      aptitudeTH: employe.aptitudeTH || 'APTE',
-      dateEC: employe.dateEC || '',
-      aptitudeEC: employe.aptitudeEC || 'APTE',
-      statut: employe.statut || 'Non faite',
-      observations
     });
     setShowModal(true);
   };
+
+  const handleView = (employe) => {
+    setSelectedEmploye(employe);
+    setShowViewModal(true);
+  };
+
   const resetForm = () => {
     setSelectedEmploye(null);
     setFormData({
@@ -138,26 +91,13 @@ const GestionEmployes = () => {
       nom: '',
       prenom: '',
       entite: '',
-      service: '',
-      dateVisite2024: '',
-      dateVisite2025: '',
-      eligibilite: '1',
-      aptitude: 'APTE',
-      dateHC: '',
-      aptitudeHC: 'APTE',
-      dateTH: '',
-      aptitudeTH: 'APTE',
-      dateEC: '',
-      aptitudeEC: 'APTE',
-      statut: 'Non faite',
-      observations: {
-        aptitudeGenerale: '',
-        aptitudeHC: '',
-        aptitudeTH: '',
-        aptitudeEC: ''
-      }
     });
   };
+
+  // Filter employees by selected entity
+  const employesFiltres = employes.filter((employe) =>
+    !entiteFiltre || employe.entite === entiteFiltre
+  );
 
   return (
     <Container fluid className="mt-4">
@@ -176,28 +116,16 @@ const GestionEmployes = () => {
           )}
           <div className="d-flex gap-2">
             <Form.Select
-              className="me-2"
-              value={serviceFiltre}
-              onChange={(e) => setServiceFiltre(e.target.value)}
+              value={entiteFiltre}
+              onChange={(e) => setEntiteFiltre(e.target.value)}
               style={{ width: 'auto' }}
             >
-              <option value="">Tous les services</option>
-              <option value="OIG/B">OIG/B</option>
-              <option value="OIG/B/E">OIG/B/E</option>
-              <option value="OIG/B/L">OIG/B/L</option>
-              <option value="OIG/B/M">OIG/B/M</option>
-              <option value="OIG/B/P">OIG/B/P</option>
-              <option value="OIG/B/M/C">OIG/B/M/C</option>
+              <option value="">Toutes les entités</option>
+              {entities.map((entite) => (
+                <option key={entite} value={entite}>{entite}</option>
+              ))}
             </Form.Select>
-            <Form.Select 
-              value={anneeFiltre}
-              onChange={(e) => setAnneeFiltre(e.target.value)}
-              style={{ width: 'auto' }}
-            >
-              <option value="2024">2024</option>
-              <option value="2025">2025</option>
-            </Form.Select>
-            <Button variant="primary" onClick={() => {
+            <Button className="btn-ajouter" onClick={() => {
               resetForm();
               setShowModal(true);
             }}>
@@ -214,63 +142,45 @@ const GestionEmployes = () => {
                   <th>NOM</th>
                   <th>PRENOM</th>
                   <th>ENTITE</th>
-                  <th>DATE DE VMS 2024</th>
-                  <th>DATE DE VMS 2025</th>
-                  <th>ELIGIBILITE</th>
-                  <th>APTITUDE</th>
-                  <th>HC</th>
-                  <th>APTITUDE</th>
-                  <th>TH</th>
-                  <th>APTITUDE</th>
-                  <th>EC</th>
-                  <th>APTITUDE</th>
-                  <th>Statut</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {Array.isArray(employes) && employes.length > 0 ? (
-                  employes
-                    .filter(employe => !serviceFiltre || employe.service === serviceFiltre)
-                    .map((employe) => (
+                {Array.isArray(employesFiltres) && employesFiltres.length > 0 ? (
+                  employesFiltres.map((employe) => (
                     <tr key={employe._id || employe.matricule}>
                       <td>{employe.matricule}</td>
                       <td>{employe.nom}</td>
                       <td>{employe.prenom}</td>
                       <td>{employe.entite}</td>
-                      <td>{employe.dateVisite2024}</td>
-                      <td>{employe.dateVisite2025}</td>
-                      <td>{employe.eligibilite === '1' ? 'Éligible' : 'Non éligible'}</td>
-                      <td>{employe.aptitude}</td>
-                      <td>{employe.dateHC}</td>
-                      <td>{employe.aptitudeHC}</td>
-                      <td>{employe.dateTH}</td>
-                      <td>{employe.aptitudeTH}</td>
-                      <td>{employe.dateEC}</td>
-                      <td>{employe.aptitudeEC}</td>
-                      <td>{employe.statut}</td>
                       <td>
-                        <Button
-                          variant="warning"
-                          size="sm"
-                          className="me-2"
+                        <button
+                          className="btn-action"
+                          onClick={() => handleView(employe)}
+                          title="Voir les détails"
+                        >
+                          <i className="fas fa-eye"></i>
+                        </button>
+                        <button
+                          className="btn-action"
                           onClick={() => handleEdit(employe)}
+                          title="Modifier"
                         >
-                          Modifier
-                        </Button>
-                        <Button
-                          variant="danger"
-                          size="sm"
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        <button
+                          className="btn-action"
                           onClick={() => handleDelete(employe._id)}
+                          title="Supprimer"
                         >
-                          Supprimer
-                        </Button>
+                          <i className="fas fa-trash"></i>
+                        </button>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="16" className="text-center">
+                    <td colSpan="5" className="text-center">
                       Aucun employé trouvé
                     </td>
                   </tr>
@@ -281,6 +191,7 @@ const GestionEmployes = () => {
         </Card.Body>
       </Card>
 
+      {/* Modal for Adding/Editing Employee */}
       <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>
@@ -290,244 +201,55 @@ const GestionEmployes = () => {
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
             <Row>
-              <Col md={4}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Matricule</Form.Label>
                   <Form.Control
                     type="text"
                     value={formData.matricule}
-                    onChange={(e) => setFormData({...formData, matricule: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, matricule: e.target.value })}
                     required
                   />
                 </Form.Group>
               </Col>
-              <Col md={4}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Nom</Form.Label>
                   <Form.Control
                     type="text"
                     value={formData.nom}
-                    onChange={(e) => setFormData({...formData, nom: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
                     required
                   />
                 </Form.Group>
               </Col>
-              <Col md={4}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Prénom</Form.Label>
                   <Form.Control
                     type="text"
                     value={formData.prenom}
-                    onChange={(e) => setFormData({...formData, prenom: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, prenom: e.target.value })}
                     required
                   />
                 </Form.Group>
               </Col>
-            </Row>
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Service</Form.Label>
-                  <Form.Select
-                    value={formData.service}
-                    onChange={(e) => setFormData({...formData, service: e.target.value})}
-                    required
-                  >
-                    <option value="">Sélectionner un service</option>
-                    <option value="OIG/B">OIG/B</option>
-                    <option value="OIG/B/E">OIG/B/E</option>
-                    <option value="OIG/B/L">OIG/B/L</option>
-                    <option value="OIG/B/M">OIG/B/M</option>
-                    <option value="OIG/B/P">OIG/B/P</option>
-                    <option value="OIG/B/M/C">OIG/B/M/C</option>
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-              <Col md={6}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Entité</Form.Label>
-                  <Form.Control
-                    type="text"
+                  <Form.Select
                     value={formData.entite}
-                    onChange={(e) => setFormData({...formData, entite: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, entite: e.target.value })}
                     required
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={3}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Date VMS 2024</Form.Label>
-                  <Form.Control
-                    type="date"
-                    value={formData.dateVisite2024}
-                    onChange={(e) => setFormData({...formData, dateVisite2024: e.target.value})}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={3}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Date VMS 2025</Form.Label>
-                  <Form.Control
-                    type="date"
-                    value={formData.dateVisite2025}
-                    onChange={(e) => setFormData({...formData, dateVisite2025: e.target.value})}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col md={4}>
-                <Form.Group className="mb-3">
-                  <Form.Label>HC</Form.Label>
-                  <Form.Control
-                    type="date"
-                    value={formData.dateHC}
-                    onChange={(e) => setFormData({...formData, dateHC: e.target.value})}
-                  />
-                  <Form.Select
-                    value={formData.aptitudeHC}
-                    onChange={(e) => setFormData({...formData, aptitudeHC: e.target.value})}
-                    className="mb-2"
                   >
-                    <option value="APTE">APTE</option>
-                    <option value="INAPTE">INAPTE</option>
-                  </Form.Select>
-                  <Form.Control
-                    as="textarea"
-                    placeholder="Diagnostic / Observations pour HC"
-                    value={formData.observations.aptitudeHC}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      observations: {
-                        ...formData.observations,
-                        aptitudeHC: e.target.value
-                      }
-                    })}
-                    rows={2}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={4}>
-                <Form.Group className="mb-3">
-                  <Form.Label>TH</Form.Label>
-                  <Form.Control
-                    type="date"
-                    value={formData.dateTH}
-                    onChange={(e) => setFormData({...formData, dateTH: e.target.value})}
-                  />
-                  <Form.Select
-                    value={formData.aptitudeTH}
-                    onChange={(e) => setFormData({...formData, aptitudeTH: e.target.value})}
-                    className="mb-2"
-                  >
-                    <option value="APTE">APTE</option>
-                    <option value="INAPTE">INAPTE</option>
-                  </Form.Select>
-                  <Form.Control
-                    as="textarea"
-                    placeholder="Diagnostic / Observations pour TH"
-                    value={formData.observations.aptitudeTH}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      observations: {
-                        ...formData.observations,
-                        aptitudeTH: e.target.value
-                      }
-                    })}
-                    rows={2}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={4}>
-                <Form.Group className="mb-3">
-                  <Form.Label>EC</Form.Label>
-                  <Form.Control
-                    type="date"
-                    value={formData.dateEC}
-                    onChange={(e) => setFormData({...formData, dateEC: e.target.value})}
-                  />
-                  <Form.Select
-                    value={formData.aptitudeEC}
-                    onChange={(e) => setFormData({...formData, aptitudeEC: e.target.value})}
-                    className="mb-2"
-                  >
-                    <option value="APTE">APTE</option>
-                    <option value="INAPTE">INAPTE</option>
-                  </Form.Select>
-                  <Form.Control
-                    as="textarea"
-                    placeholder="Diagnostic / Observations pour EC"
-                    value={formData.observations.aptitudeEC}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      observations: {
-                        ...formData.observations,
-                        aptitudeEC: e.target.value
-                      }
-                    })}
-                    rows={2}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col md={12}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Aptitude Générale</Form.Label>
-                  <Form.Select
-                    value={formData.aptitude}
-                    onChange={(e) => setFormData({...formData, aptitude: e.target.value})}
-                    className="mb-2"
-                  >
-                    <option value="APTE">APTE</option>
-                    <option value="INAPTE">INAPTE</option>
-                  </Form.Select>
-                  <Form.Control
-                    as="textarea"
-                    placeholder="Diagnostic / Observations générales"
-                    value={formData.observations.aptitudeGenerale}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      observations: {
-                        ...formData.observations,
-                        aptitudeGenerale: e.target.value
-                      }
-                    })}
-                    rows={2}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Éligibilité</Form.Label>
-                  <Form.Select
-                    value={formData.eligibilite}
-                    onChange={(e) => setFormData({...formData, eligibilite: e.target.value})}
-                  >
-                    <option value="1">1</option>
-                    <option value="0">0</option>
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Statut</Form.Label>
-                  <Form.Select
-                    value={formData.statut}
-                    onChange={(e) => setFormData({...formData, statut: e.target.value})}
-                  >
-                    <option value="Non faite">Non faite</option>
-                    <option value="Faite">Faite</option>
+                    <option value="">Sélectionner une entité</option>
+                    {entities.map((entite) => (
+                      <option key={entite} value={entite}>{entite}</option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
             </Row>
-
             <div className="d-flex justify-content-end gap-2">
               <Button variant="secondary" onClick={() => setShowModal(false)}>
                 Annuler
@@ -538,6 +260,28 @@ const GestionEmployes = () => {
             </div>
           </Form>
         </Modal.Body>
+      </Modal>
+
+      {/* Modal for Viewing Employee */}
+      <Modal show={showViewModal} onHide={() => setShowViewModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Détails de l'Employé</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedEmploye && (
+            <div>
+              <p><strong>Matricule:</strong> {selectedEmploye.matricule}</p>
+              <p><strong>Nom:</strong> {selectedEmploye.nom}</p>
+              <p><strong>Prénom:</strong> {selectedEmploye.prenom}</p>
+              <p><strong>Entité:</strong> {selectedEmploye.entite}</p>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowViewModal(false)}>
+            Fermer
+          </Button>
+        </Modal.Footer>
       </Modal>
     </Container>
   );
