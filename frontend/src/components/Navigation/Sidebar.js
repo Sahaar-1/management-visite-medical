@@ -14,9 +14,7 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
-      <div className="sidebar-header">
-        <h3>Visites Médicales</h3>
-      </div>
+     
       <div className="sidebar-user">
         <div className="user-info">
           <span>{user?.nom} {user?.prenom}</span>

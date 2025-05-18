@@ -1,0 +1,205 @@
+.container {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+  
+  .profile-header {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+  }
+  
+  .profile-picture-wrapper {
+    position: relative;
+    margin-right: 1.5rem;
+  }
+  
+  .profile-picture {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #4CAF50;
+    transition: opacity 0.3s ease;
+  }
+  
+  .profile-placeholder {
+    color: #6c757d;
+    font-size: 80px;
+    transition: color 0.3s ease;
+  }
+  
+  .upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .profile-picture-wrapper:hover .upload-overlay {
+    opacity: 1;
+  }
+  
+  .upload-overlay i {
+    color: #ffffff;
+    font-size: 1.5rem;
+  }
+  
+  .user-name {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333333;
+    margin: 0;
+  }
+  
+  .user-role {
+    font-size: 1rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+  }
+  
+  .profile-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    background-color: #ffffff;
+    transition: all 0.3s ease;
+  }
+  
+  .profile-card:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 1.25rem;
+    font-weight: 600;
+    color: #333333;
+  }
+  
+  .card-body {
+    padding: 2rem;
+  }
+  
+  .alert-custom {
+    border-radius: 0.25rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-label {
+    font-weight: 500;
+    color: #333333;
+    margin-bottom: 0.5rem;
+  }
+  
+  .form-control-custom {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .form-control-custom:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+    outline: none;
+  }
+  
+  .form-control-custom:disabled {
+    background-color: #f0f0f0;
+    color: #6c757d;
+  }
+  
+  .user-info p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #333333;
+  }
+  
+  .user-info p strong {
+    color: #333333;
+  }
+  
+  .btn-custom {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-custom:hover {
+    background-color: #45a049;
+    border-color: #45a049;
+  }
+  
+  @media (max-width: 768px) {
+    .container {
+      padding: 1rem;
+    }
+  
+    .profile-header {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1rem;
+    }
+  
+    .profile-picture-wrapper {
+      margin-bottom: 1rem;
+      margin-right: 0;
+    }
+  
+    .profile-picture,
+    .profile-placeholder {
+      width: 60px;
+      height: 60px;
+      font-size: 60px;
+    }
+  
+    .upload-overlay {
+      width: 60px;
+      height: 60px;
+    }
+  
+    .user-name {
+      font-size: 1.5rem;
+    }
+  
+    .card-body {
+      padding: 1.5rem;
+    }
+  
+    .form-control-custom {
+      font-size: 0.9rem;
+      padding: 0.5rem 0.75rem;
+    }
+  
+    .btn-custom {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+  }

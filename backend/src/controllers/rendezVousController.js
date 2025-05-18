@@ -183,3 +183,21 @@ exports.getAllEmployes = async (req, res) => {
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };
+
+// Récupérer les statistiques des rendez-vous
+exports.getRendezVousStats = async (req, res) => {
+  try {
+    const dateActuelle = new Date();
+    
+    // Compter les rendez-vous à venir (date supérieure à aujourd'hui)
+    const aVenir = await RendezVous.countDocuments({ date: { $gt: dateActuelle } });
+    
+    // Compter les rendez-vous terminés (date inférieure à aujourd'hui)
+    const termines = await RendezVous.countDocuments({ date: { $lt: dateActuelle } });
+    
+    res.status(200).json({ aVenir, termines });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des statistiques de rendez-vous:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+};

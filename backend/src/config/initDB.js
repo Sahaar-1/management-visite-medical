@@ -3,28 +3,30 @@ const bcrypt = require('bcryptjs');
 
 const createDefaultAdmin = async () => {
   try {
-    // Vérifier si l'admin existe déjà
-    const adminExists = await User.findOne({ email: 'admin@example.com' });
+    // Supprimer tous les admins existants
+    await User.deleteMany({ role: 'admin' });
     
-    if (!adminExists) {
-      // Hasher le mot de passe
-      const salt = await bcrypt.genSalt(10);
-      const hashedPazssword = await bcrypt.hash('admin123', salt);
+    // Créer l'admin avec le mot de passe non haché
+    const admin = new User({
+      nom: 'Admin',
+      prenom: 'System',
+      email: 'admin@example.com',
+      motDePasse: 'admin123', // Le middleware pre('save') se chargera du hachage
+      role: 'admin',
+      telephone: '0123456789'  // Ajout du numéro de téléphone requis
+    });
 
-      // Créer l'administrateur par défaut
-      const admin = new User({
-        nom: 'Admin',
-        prenom: 'System',
-        email: 'admin@example.com',
-        motDePasse: hashedPassword,
-        role: 'admin'
-      });
-
-      await admin.save();
-      console.log('Compte administrateur par défaut créé avec succès');
-    }
+    await admin.save();
+    
+    // Vérification post-création
+    const savedAdmin = await User.findOne({ email: 'admin@example.com' }).select('+motDePasse');
+    const verifyAfterSave = await bcrypt.compare('admin123', savedAdmin.motDePasse);
+    console.log('Vérification après sauvegarde:', verifyAfterSave);
+    
+    console.log('Admin créé avec succès');
   } catch (error) {
-    console.error('Erreur lors de la création du compte admin:', error);
+    console.error('Erreur création admin:', error);
+    throw error;
   }
 };
 

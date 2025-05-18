@@ -1,176 +1,173 @@
-/* Connexion.css */
-.connexion-container {
+.connexion-hero {
   min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
   display: flex;
-  align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #ffffff, #f3f3f5);
-  padding: 20px;
+  align-items: center;
 }
 
-.row {
-  width: 100%;
-  max-width: 700px; /* Further increased width for a larger form */
-}
-
-.card {
+.connexion-card {
+  width: 900px;
   border: none;
-  border-radius: 30px; /* Larger radius for a bolder look */
-  background: rgba(255, 255, 255, 0.95); /* Frosted glass effect */
-  backdrop-filter: blur(15px); /* Stronger blur for a more prominent effect */
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3); /* Larger shadow for depth */
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: white;
 }
 
-.card:hover {
-  transform: translateY(-8px); /* Increased lift on hover */
-  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35); /* Larger hover shadow */
+.connexion-content {
+  display: flex;
+  flex-direction: row;
 }
 
-.card-header {
-  background: transparent;
-  border-bottom: none;
-  padding: 50px; /* Increased padding for larger header */
+.connexion-left {
+  background: linear-gradient(45deg, #27AE60, #219653);
+  width: 40%;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+}
+
+.connexion-right {
+  width: 60%;
+  padding: 3rem;
+  background-color: #fff;
+}
+
+.custom-logo {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 1.2rem;
+  border-radius: 15px;
   text-align: center;
 }
 
-.card-header h3 {
-  margin: 0;
-  font-size: 3rem; /* Further increased font size for title */
+.login-title {
+  color: #2D3748;
+  font-size: 2rem;
   font-weight: 700;
-  color: #1e3a8a; /* Dark blue for contrast */
-  letter-spacing: 1.5px; /* Wider spacing for emphasis */
+  margin-bottom: 2rem;
 }
 
-.card-body {
-  padding: 60px; /* Further increased padding for larger body */
+.form-group-custom {
+  margin-bottom: 1.8rem;
+  position: relative;
 }
 
-.alert-danger {
-  border-radius: 15px; /* Larger radius */
-  background: rgba(220, 53, 69, 0.1);
-  border: 1px solid #dc3545;
-  color: #dc3545;
-  font-size: 1.2rem; /* Increased font size for alert */
-  margin-bottom: 30px; /* Increased margin */
-  padding: 20px; /* Increased padding for alert */
+.form-group-custom .form-control,
+.form-group-custom .form-select {
+  width: 100%;
+  height: 50px;
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+  border: 1.5px solid #CBD5E0;
+  border-radius: 10px;
+  background-color: #F7FAFC;
+  transition: all 0.3s ease;
 }
 
-.mb-3 {
-  margin-bottom: 3rem !important; /* Increased margin between form groups */
-}
-
-.form-label {
-  font-size: 1.2rem; /* Increased font size for labels */
-  font-weight: 600;
-  color: #1f2937; /* Dark gray for readability */
-  margin-bottom: 15px; /* Increased margin below labels */
-}
-
-.form-control,
-.form-select {
-  border-radius: 18px; /* Larger radius */
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 20px 30px; /* Further increased padding for larger inputs */
-  font-size: 1.2rem; /* Increased font size for inputs */
-  background: rgba(255, 255, 255, 0.7);
-  height: auto; /* Ensures inputs scale with padding */
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.form-control:focus,
-.form-select:focus {
-  border-color: #3b82f6; /* Bright blue for focus */
-  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); /* Larger focus shadow */
-  background: #ffffff;
+.form-group-custom .form-control:focus,
+.form-group-custom .form-select:focus {
+  border-color: #27AE60;
+  box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.15);
+  background-color: #fff;
   outline: none;
 }
 
-.form-control::placeholder {
-  color: #9ca3af; /* Light gray for placeholders */
-  font-style: italic;
-  font-size: 1.2rem; /* Increased placeholder font size */
+.form-group-custom .form-label {
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  background: white;
+  padding: 0 5px;
+  font-size: 0.85rem;
+  color: #4A5568;
+  transition: all 0.3s ease;
 }
 
-.btn-container {
-  margin-top: 50px; /* Increased margin before button container */
-  padding: 15px; /* Added padding for a subtle container effect */
-  background: rgba(255, 255, 255, 0.1); /* Light background for container */
-  border-radius: 20px; /* Rounded corners for container */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for container */
-  text-align: center; /* Center the button */
+.form-group-custom .form-control:focus + .form-label,
+.form-group-custom .form-select:focus + .form-label {
+  color: #27AE60;
 }
 
-.btn-primary {
-  background: #90a8cf; /* Custom background to match previous design */
-  border: none;
-  padding: 25px 35px; /* Further increased padding for larger button */
-  font-size: 1.6rem; /* Increased font size for button */
+.btn-success {
+  width: 100%;
+  height: 50px;
+  background-color: #27AE60 !important;
+  color: white;
+  font-size: 1.05rem;
   font-weight: 600;
-  border-radius: 20px; /* Larger radius */
-  text-transform: uppercase;
-  letter-spacing: 1.5px; /* Wider spacing for emphasis */
-  width: 100%; /* Full width within container */
-  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  border: none;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
-.btn-primary:hover {
-  background: #7086c3;
-  transform: translateY(-6px); /* Increased lift on hover */
-  box-shadow: 0 10px 25px rgba(29, 78, 216, 0.55); /* Larger hover shadow */
+.btn-success:hover {
+  background-color: #219653 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.25);
 }
 
-.btn-primary:active {
-  transform: translateY(0);
-  box-shadow: none;
+.btn-success::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
 }
 
-/* Responsive adjustments */
-@media (max-width: 576px) {
-  .col-md-6 {
-    padding: 0 15px;
+.btn-success:hover::before {
+  left: 100%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .connexion-card {
+    width: 95%;
+    margin: 1rem;
+    flex-direction: column;
   }
 
-  .card-body {
-    padding: 35px; /* Adjusted for small screens */
+  .connexion-content {
+    flex-direction: column;
   }
 
-  .card-header {
-    padding: 30px; /* Adjusted for small screens */
+  .connexion-left,
+  .connexion-right {
+    width: 100%;
+    padding: 2rem;
   }
 
-  .card-header h3 {
-    font-size: 2.5rem; /* Adjusted for smaller screens */
-  }
-
-  .btn-primary {
-    padding: 20px 30px; /* Adjusted for smaller screens */
-    font-size: 1.4rem; /* Adjusted for smaller screens */
-  }
-
-  .form-control,
-  .form-select {
-    padding: 18px 25px; /* Adjusted for smaller screens */
-    font-size: 1.1rem; /* Adjusted for smaller screens */
-  }
-
-  .form-label {
-    font-size: 1.1rem; /* Adjusted for smaller screens */
-  }
-
-  .alert-danger {
-    font-size: 1.1rem; /* Adjusted for smaller screens */
-    padding: 18px; /* Adjusted for smaller screens */
-  }
-
-  .btn-container {
-    margin-top: 30px; /* Adjusted for small screens */
-    padding: 10px; /* Adjusted for small screens */
+  .connexion-left {
+    border-radius: 16px 16px 0 0;
   }
 }
-.icon-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+
+/* Animation label flottant */
+.form-group-custom .form-control::placeholder {
+  color: transparent;
+}
+
+.form-group-custom .form-control:not(:placeholder-shown) + .form-label,
+.form-group-custom .form-select:not(:placeholder-shown) + .form-label {
+  transform: translateY(-20px);
+  font-size: 0.8rem;
+  color: #27AE60;
+}
+
+.ocp-logo {
+  width: 120px;
+  height: auto;
+  margin-bottom: 1.5rem;
 }

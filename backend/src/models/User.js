@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Veuillez entrer un mot de passe'],
     minlength: 6,
-    select: false
+    select: true  // Temporairement changé à true pour le débogage
   },
   role: {
     type: String,
@@ -39,6 +39,9 @@ const UserSchema = new mongoose.Schema({
   },
   telephone: {
     type: String,
+    required: function() {
+      return this.role === 'medecin' || this.role === 'admin';
+    },
     match: [/^[0-9]{10}$/, 'Veuillez entrer un numéro de téléphone valide']
   },
   adresse: {
@@ -68,6 +71,12 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: function() {
       return this.role === 'medecin';
+    },
+    validate: {
+      validator: function(v) {
+        return this.role !== 'medecin' || (v && v.length > 0);
+      },
+      message: 'La spécialité est requise pour les médecins'
     }
   }
 }, {
@@ -98,15 +107,26 @@ UserSchema.pre('save', async function(next) {
 });
 
 // Méthode pour vérifier le mot de passe
+// Dans models/User.js
+// Améliorer la méthode comparePassword avec plus de logs
 UserSchema.methods.comparePassword = async function(candidatePassword) {
   try {
-    console.log('Comparaison des mots de passe...');
+    if (!this.motDePasse) {
+      console.error('Erreur: Mot de passe non disponible dans l\'objet utilisateur');
+      return false;
+    }
+    
+    console.log('Détails de comparaison:');
+    console.log('- Longueur du mot de passe fourni:', candidatePassword.length);
+    console.log('- Longueur du hash stocké:', this.motDePasse.length);
+    console.log('- Hash stocké commence par:', this.motDePasse.substring(0, 10));
+    
     const isMatch = await bcrypt.compare(candidatePassword, this.motDePasse);
-    console.log('Résultat de la comparaison:', isMatch);
+    console.log('- Résultat de la comparaison:', isMatch);
     return isMatch;
   } catch (error) {
-    console.error('Erreur lors de la comparaison des mots de passe:', error);
-    throw error;
+    console.error('Erreur détaillée dans comparePassword:', error);
+    return false;
   }
 };
 

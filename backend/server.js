@@ -45,8 +45,8 @@ app.get('/api', (req, res) => {
 
 // Routes de l'API avec préfixe /api
 app.use('/api/auth', authRoutes);
-// Commenté pour se concentrer uniquement sur l'authentification
-app.use('/api', employeRoutes);
+// Modifier cette ligne
+app.use('/api/employes', employeRoutes);
 // app.use('/api/services', serviceRoutes);
 // app.use('/api/notifications', require('./src/routes/notificationRoutes'));
 app.use('/api/rendez-vous', rendezVousRoutes);

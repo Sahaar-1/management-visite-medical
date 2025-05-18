@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { FaUser } from 'react-icons/fa'; // Changed to FaUser for a user iconimport './Connexion.css';
+import './Connexion.css';
+
 const Connexion = () => {
   const navigate = useNavigate();
-  const { login, error } = useAuth();  const [formData, setFormData] = useState({
+  const { login, error } = useAuth();
+
+  const [formData, setFormData] = useState({
     email: '',
     motDePasse: '',
     role: ''
@@ -19,10 +22,9 @@ const Connexion = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();    try {
+    e.preventDefault();
+    try {
       const user = await login(formData.email, formData.motDePasse, formData.role);
-      
-      // Redirection basée sur le rôle
       switch (user.role) {
         case 'admin':
           navigate('/admin/tableau-de-bord');
@@ -34,75 +36,92 @@ const Connexion = () => {
           navigate('/');
       }
     } catch (err) {
-      // L'erreur est déjà gérée par le contexte
       console.error('Erreur de connexion:', err);
     }
   };
 
   return (
-    <Container className="connexion-container">
-      <div className="row justify-content-center">
-        <div className="col-md-6">
-          <Card>
-            <Card.Header>
-              <div className="icon-container">
-                <FaUser size={50} color="#1e3a8a" /> {/* Changed to FaUser */}
+    <Container fluid className="connexion-hero d-flex align-items-center justify-content-center">
+      <Card className="connexion-card shadow-lg">
+        <div className="connexion-content d-flex">
+          {/* Partie gauche */}
+          <div className="connexion-left d-flex flex-column align-items-center justify-content-center text-white p-4">
+            <div className="custom-logo mb-4 d-flex align-items-center justify-content-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="40"
+                height="40"
+                fill="#FFFFFF"
+                viewBox="0 0 24 24"
+                className="me-2"
+              >
+                <path d="M12 2a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-4H6a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h4V4a2 2 0 0 1 2-2h0z"/>
+              </svg>
+              <h2 className="m-0 text-white">MediConnect</h2>
+            </div>
+            <h3 className="text-white">Espace Professionnel</h3>
+            <p>Gérez vos rendez-vous médicaux avec efficacité et simplicité.</p>
+          </div>
+
+          {/* Partie droite */}
+          <div className="connexion-right p-5">
+            <div className="text-center mb-4">
+              <img 
+                src="/ocp-logo.png" 
+                alt="OCP Logo" 
+                className="ocp-logo"
+              />
+            </div>
+            <h4 className="login-title">Login</h4>
+            {error && <Alert variant="danger">{error}</Alert>}
+            <Form onSubmit={handleSubmit}>
+              <Form.Group className="mb-4 form-group-custom">
+                <Form.Control
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  placeholder=" "
+                />
+                <Form.Label>Email</Form.Label>
+              </Form.Group>
+
+              <Form.Group className="mb-4 form-group-custom">
+                <Form.Control
+                  type="password"
+                  name="motDePasse"
+                  value={formData.motDePasse}
+                  onChange={handleChange}
+                  required
+                  placeholder=" "
+                />
+                <Form.Label>Mot de passe</Form.Label>
+              </Form.Group>
+
+              <Form.Group className="mb-4 form-group-custom">
+                <Form.Select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Sélectionnez un rôle</option>
+                  <option value="admin">Administrateur</option>
+                  <option value="medecin">Médecin</option>
+                </Form.Select>
+                <Form.Label>Rôle</Form.Label>
+              </Form.Group>
+
+              <div className="d-grid">
+                <Button variant="success" type="submit">
+                  Se connecter
+                </Button>
               </div>
-            </Card.Header>
-            <Card.Body>
-              {error && (
-                <Alert variant="danger">
-                  {error}
-                </Alert>
-              )}
-
-              <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    placeholder="Entrez votre email"
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Label>Mot de passe</Form.Label>                  <Form.Control
-                    type="password"
-                    name="motDePasse"
-                    value={formData.motDePasse}
-                    onChange={handleChange}
-                    required
-                    placeholder="Entrez votre mot de passe"
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Label>Rôle</Form.Label>                  <Form.Select
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Sélectionnez un rôle</option>
-                    <option value="admin">Administrateur</option>
-                    <option value="medecin">Médecin</option>
-                  </Form.Select>
-                </Form.Group>
-
-                <div className="btn-container">
-                  <Button variant="btn" type="submit">
-                    Se connecter
-                  </Button>
-                </div>
-              </Form>
-            </Card.Body>
-          </Card>
+            </Form>
+          </div>
         </div>
-      </div>
+      </Card>
     </Container>
   );
 };

@@ -227,6 +227,8 @@ const authController = {
         email: utilisateur.email,
         role: utilisateur.role,
         service: utilisateur.service,
+        telephone: utilisateur.telephone,  // Ajout du téléphone
+        specialite: utilisateur.specialite, // Ajout de la spécialité
         dernierConnexion: utilisateur.dernierConnexion
       });
     } catch (error) {
@@ -241,16 +243,31 @@ const authController = {
   // Mettre à jour le profil
   mettreAJourProfil: async (req, res) => {
     try {
-      const { nom, prenom, telephone, adresse } = req.body;
+      const { nom, prenom, telephone, adresse, specialite } = req.body;
       console.log('Mise à jour du profil pour:', req.user.email, req.body);
 
-      // Mettre à jour les champs
+      // Validation du numéro de téléphone
+      if (telephone && !/^[0-9]{10}$/.test(telephone)) {
+        return res.status(400).json({ 
+          message: 'Le numéro de téléphone doit contenir exactement 10 chiffres' 
+        });
+      }
+
+      // Récupérer l'utilisateur avec tous les champs
       const utilisateur = await User.findById(req.user._id);
       
       if (!utilisateur) {
         return res.status(404).json({ message: 'Utilisateur non trouvé' });
       }
+
+      // Validation spécifique pour les médecins
+      if (utilisateur.role === 'medecin') {
+        if (specialite) {
+          utilisateur.specialite = specialite;
+        }
+      }
       
+      // Mise à jour des champs communs
       if (nom) utilisateur.nom = nom;
       if (prenom) utilisateur.prenom = prenom;
       if (telephone) utilisateur.telephone = telephone;
@@ -260,6 +277,7 @@ const authController = {
       await utilisateur.save();
       console.log('Profil mis à jour avec succès');
 
+      // Retourner la réponse avec tous les champs pertinents
       res.json({
         message: 'Profil mis à jour avec succès',
         utilisateur: {
@@ -269,7 +287,9 @@ const authController = {
           email: utilisateur.email,
           role: utilisateur.role,
           telephone: utilisateur.telephone,
-          adresse: utilisateur.adresse
+          adresse: utilisateur.adresse,
+          specialite: utilisateur.specialite,
+          service: utilisateur.service
         }
       });
     } catch (error) {

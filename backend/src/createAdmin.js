@@ -13,12 +13,12 @@ async function createAdminUser() {
     });
 
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash('admin123', salt);
-
+// Dans createAdmin.js
+const hashedPassword = await bcrypt.hash('admin123', salt);
     const adminUser = new User({
       nom: 'Admin',
       prenom: 'System',
-      email: 'admin@example.com',
+      email: 'saharelmabrouk14@gmail.com',
       motDePasse: hashedPassword,
       role: 'admin'
     });
