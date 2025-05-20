@@ -10,7 +10,7 @@ const createDefaultAdmin = async () => {
     const admin = new User({
       nom: 'Admin',
       prenom: 'System',
-      email: 'admin@example.com',
+      email: 'saharelmabrouk14@gmail.com',
       motDePasse: 'admin123', // Le middleware pre('save') se chargera du hachage
       role: 'admin',
       telephone: '0123456789'  // Ajout du numéro de téléphone requis
@@ -19,7 +19,7 @@ const createDefaultAdmin = async () => {
     await admin.save();
     
     // Vérification post-création
-    const savedAdmin = await User.findOne({ email: 'admin@example.com' }).select('+motDePasse');
+    const savedAdmin = await User.findOne({ email: 'saharelmabrouk14@gmail.com' }).select('+motDePasse');
     const verifyAfterSave = await bcrypt.compare('admin123', savedAdmin.motDePasse);
     console.log('Vérification après sauvegarde:', verifyAfterSave);
     

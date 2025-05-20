@@ -9,10 +9,11 @@
 .connexion-card {
   width: 900px;
   border: none;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(255, 255, 255, 0.15);
   overflow: hidden;
-  background: white;
 }
 
 .connexion-content {
@@ -33,7 +34,8 @@
 .connexion-right {
   width: 60%;
   padding: 3rem;
-  background-color: #fff;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
 }
 
 .custom-logo {
@@ -61,17 +63,18 @@
   height: 50px;
   padding: 0.9rem 1rem;
   font-size: 1rem;
-  border: 1.5px solid #CBD5E0;
+  border: 1.5px solid rgba(203, 213, 224, 0.8);
   border-radius: 10px;
-  background-color: #F7FAFC;
+  background-color: rgba(247, 250, 252, 0.8);
+  backdrop-filter: blur(4px);
   transition: all 0.3s ease;
 }
 
 .form-group-custom .form-control:focus,
 .form-group-custom .form-select:focus {
   border-color: #27AE60;
-  box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.15);
-  background-color: #fff;
+  box-shadow: 0 0 0 4px rgba(39, 174, 96, 0.15);
+  background-color: rgba(255, 255, 255, 0.95);
   outline: none;
 }
 
@@ -103,12 +106,13 @@
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
 }
 
 .btn-success:hover {
   background-color: #219653 !important;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.25);
+  box-shadow: 0 8px 20px rgba(39, 174, 96, 0.15);
 }
 
 .btn-success::before {

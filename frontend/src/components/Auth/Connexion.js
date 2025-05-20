@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -6,7 +6,23 @@ import './Connexion.css';
 
 const Connexion = () => {
   const navigate = useNavigate();
-  const { login, error } = useAuth();
+  const { login, error, user } = useAuth();
+
+  useEffect(() => {
+    // Rediriger si l'utilisateur est déjà connecté
+    if (user) {
+      switch (user.role) {
+        case 'admin':
+          navigate('/admin/tableau-de-bord', { replace: true });
+          break;
+        case 'medecin':
+          navigate('/medecin/employes', { replace: true });
+          break;
+        default:
+          navigate('/', { replace: true });
+      }
+    }
+  }, [user, navigate]);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -25,15 +41,18 @@ const Connexion = () => {
     e.preventDefault();
     try {
       const user = await login(formData.email, formData.motDePasse, formData.role);
+      
+      
+      
       switch (user.role) {
         case 'admin':
-          navigate('/admin/tableau-de-bord');
+          navigate('/admin/tableau-de-bord', { replace: true });
           break;
         case 'medecin':
-          navigate('/medecin/employes');
+          navigate('/medecin/employes', { replace: true });
           break;
         default:
-          navigate('/');
+          navigate('/', { replace: true });
       }
     } catch (err) {
       console.error('Erreur de connexion:', err);
