@@ -43,6 +43,38 @@
   font-style: italic;
 }
 
+/* Ajout du style pour le sélecteur d'année */
+.year-selector-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+.year-selector-label {
+  margin-right: 1rem;
+  margin-bottom: 0;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.year-selector {
+  width: auto;
+  min-width: 120px;
+  background-color: var(--white-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  transition: all 0.3s ease;
+}
+
+.year-selector:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(46, 204, 113, 0.25);
+}
+
 /* Cartes de statistiques */
 .dashboard-stats {
   margin-bottom: 2rem;

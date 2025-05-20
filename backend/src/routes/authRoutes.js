@@ -9,7 +9,7 @@ router.post('/inscription',
   authMiddleware.verifierRole(['admin']),
   authController.inscrire);
 
-// Route de connexion
+// Route de connexion (sans vérification de rôle)
 router.post('/connexion', authController.connecter);
 
 // Route pour obtenir le profil (nécessite une authentification)
@@ -41,5 +41,14 @@ router.get('/medecins/connexions',
 router.put('/medecins/:id', authMiddleware.verifierToken, authMiddleware.verifierRole(['admin']), authController.mettreAJourMedecin);
 router.delete('/medecins/:id', authMiddleware.verifierToken, authMiddleware.verifierRole(['admin']), authController.supprimerMedecin);
 router.post('/medecins/:id/reset-password', authMiddleware.verifierToken, authMiddleware.verifierRole(['admin']), authController.reinitialiserMotDePasse);
+
+// Route pour réinitialiser le mot de passe à la première connexion
+router.post('/reset-password-first-login', authController.resetPasswordFirstLogin);
+
+// Route de test pour le hachage (à utiliser en développement uniquement)
+if (process.env.NODE_ENV === 'development') {
+  router.post('/test-hash', authController.testHashAndCompare);
+}
+
 module.exports = router;
 

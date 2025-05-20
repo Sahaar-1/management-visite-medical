@@ -1,6 +1,5 @@
 const User = require('../models/User');
 const authMiddleware = require('../middleware/authMiddleware');
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 const authController = {
@@ -100,49 +99,53 @@ const authController = {
       });
     }
   },
-  // Connexion avec sélection de rôle
+  // Connexion sans sélection de rôle
   connecter: async (req, res) => {
     try {
-      const { email, motDePasse, role } = req.body;
-      console.log('Tentative de connexion avec:', { email, role });
+      const { email, motDePasse } = req.body;
+      console.log('Tentative de connexion avec:', { email });
       
-      if (!email || !motDePasse || !role) {
-        console.log('Email, mot de passe ou rôle manquant');
+      if (!email || !motDePasse) {
+        console.log('Email ou mot de passe manquant');
         return res.status(400).json({ 
-          message: 'Veuillez fournir un email, un mot de passe et sélectionner un rôle' 
+          message: 'Veuillez fournir un email et un mot de passe' 
+        });
+      }
+
+      // Vérifier si l'utilisateur existe avec l'email fourni
+      const utilisateur = await User.findOne({ email }).select('+motDePasse');
+      console.log('Utilisateur trouvé:', utilisateur ? 'Oui' : 'Non');
+
+      if (!utilisateur) {
+        return res.status(401).json({ 
+          message: 'Email ou mot de passe incorrect' 
         });
       }
 
       // Vérifier que le rôle est autorisé (admin ou medecin uniquement)
-      if (role !== 'admin' && role !== 'medecin') {
-        console.log('Tentative de connexion avec un rôle non autorisé:', role);
+      if (utilisateur.role !== 'admin' && utilisateur.role !== 'medecin') {
+        console.log('Tentative de connexion avec un rôle non autorisé:', utilisateur.role);
         return res.status(403).json({ 
           message: 'Accès non autorisé. Seuls les administrateurs et les médecins peuvent se connecter.' 
         });
       }
 
-      // Vérifier si l'utilisateur existe avec l'email et le rôle spécifié
-      const utilisateur = await User.findOne({ email, role }).select('+motDePasse');
-      console.log('Utilisateur trouvé:', utilisateur ? 'Oui' : 'Non');
-
-      if (!utilisateur) {
-        return res.status(401).json({ 
-          message: 'Email, mot de passe ou rôle incorrect' 
-        });
-      }      // Vérifier le mot de passe avec la méthode comparePassword
+      // Vérifier le mot de passe
       console.log('Tentative de vérification du mot de passe pour:', email);
+      console.log('Mot de passe stocké (début):', utilisateur.motDePasse.substring(0, 10) + '...');
+      
       const estValide = await utilisateur.comparePassword(motDePasse);
       console.log('Résultat de la vérification:', estValide ? 'Succès' : 'Échec');
 
       if (!estValide) {
         return res.status(401).json({ 
-          message: 'Email, mot de passe ou rôle incorrect' 
+          message: 'Email ou mot de passe incorrect' 
         });
       }
 
       // Mettre à jour la dernière connexion
       utilisateur.dernierConnexion = new Date();
-      await utilisateur.save();
+      await utilisateur.save({ validateBeforeSave: false }); // Éviter de déclencher les validations
 
       // Générer le token avec le middleware
       const token = authMiddleware.genererToken(utilisateur);
@@ -155,7 +158,8 @@ const authController = {
         email: utilisateur.email,
         role: utilisateur.role,
         dernierConnexion: utilisateur.dernierConnexion,
-        service: utilisateur.service
+        service: utilisateur.service,
+        premierConnexion: utilisateur.premierConnexion
       };
 
       res.json({
@@ -244,38 +248,43 @@ const authController = {
   mettreAJourProfil: async (req, res) => {
     try {
       const { nom, prenom, telephone, adresse, specialite } = req.body;
-      console.log('Mise à jour du profil pour:', req.user.email, req.body);
+      
+      // Logs détaillés pour le débogage
+      console.log('Mise à jour du profil pour:', req.user.email);
+      console.log('Données reçues:', req.body);
+      console.log('Téléphone reçu:', telephone, 'Type:', typeof telephone);
 
-      // Validation du numéro de téléphone
+      // Validation simplifiée du téléphone
       if (telephone && !/^[0-9]{10}$/.test(telephone)) {
         return res.status(400).json({ 
           message: 'Le numéro de téléphone doit contenir exactement 10 chiffres' 
         });
       }
 
-      // Récupérer l'utilisateur avec tous les champs
-      const utilisateur = await User.findById(req.user._id);
+      // Mise à jour directe avec findByIdAndUpdate pour éviter les problèmes de validation
+      const updateData = {};
+      if (nom) updateData.nom = nom;
+      if (prenom) updateData.prenom = prenom;
+      // Toujours inclure le téléphone, même s'il est vide
+      updateData.telephone = telephone;
+      if (adresse) updateData.adresse = adresse;
+      if (specialite && req.user.role === 'medecin') updateData.specialite = specialite;
+
+      console.log('Données de mise à jour:', updateData);
+
+      // Utiliser findByIdAndUpdate avec runValidators: false pour contourner les validations
+      const utilisateur = await User.findByIdAndUpdate(
+        req.user._id,
+        updateData,
+        { new: true, runValidators: false }
+      );
       
       if (!utilisateur) {
         return res.status(404).json({ message: 'Utilisateur non trouvé' });
       }
 
-      // Validation spécifique pour les médecins
-      if (utilisateur.role === 'medecin') {
-        if (specialite) {
-          utilisateur.specialite = specialite;
-        }
-      }
-      
-      // Mise à jour des champs communs
-      if (nom) utilisateur.nom = nom;
-      if (prenom) utilisateur.prenom = prenom;
-      if (telephone) utilisateur.telephone = telephone;
-      if (adresse) utilisateur.adresse = adresse;
-
-      // Sauvegarder les modifications
-      await utilisateur.save();
       console.log('Profil mis à jour avec succès');
+      console.log('Nouveau téléphone:', utilisateur.telephone);
 
       // Retourner la réponse avec tous les champs pertinents
       res.json({
@@ -505,6 +514,92 @@ const authController = {
       });
     }
   },
+
+  // Ajouter cette nouvelle route pour la réinitialisation du mot de passe à la première connexion
+  resetPasswordFirstLogin: async (req, res) => {
+    try {
+      const { email, nouveauMotDePasse, confirmationMotDePasse, userId } = req.body;
+      
+      // Vérifier que les mots de passe correspondent
+      if (nouveauMotDePasse !== confirmationMotDePasse) {
+        return res.status(400).json({ message: 'Les mots de passe ne correspondent pas' });
+      }
+      
+      // Vérifier que le mot de passe est assez long
+      if (nouveauMotDePasse.length < 6) {
+        return res.status(400).json({ message: 'Le mot de passe doit contenir au moins 6 caractères' });
+      }
+      
+      // Trouver l'utilisateur par ID ou par email actuel
+      let utilisateur;
+      if (userId) {
+        utilisateur = await User.findById(userId);
+      } else {
+        utilisateur = await User.findOne({ email });
+      }
+      
+      if (!utilisateur) {
+        return res.status(404).json({ message: 'Utilisateur non trouvé' });
+      }
+      
+      console.log('Avant mise à jour - premierConnexion:', utilisateur.premierConnexion);
+      console.log('Avant mise à jour - email:', utilisateur.email);
+      
+      // Mettre à jour le mot de passe
+      utilisateur.motDePasse = nouveauMotDePasse; // Ne pas hacher ici, le middleware pre-save s'en chargera
+      utilisateur.premierConnexion = false;
+      
+      // Mettre à jour l'email si fourni et différent de l'email actuel
+      if (email && email !== utilisateur.email) {
+        // Vérifier si l'email est déjà utilisé par un autre utilisateur
+        const emailExiste = await User.findOne({ email, _id: { $ne: utilisateur._id } });
+        if (emailExiste) {
+          return res.status(400).json({ message: 'Cet email est déjà utilisé par un autre utilisateur' });
+        }
+        
+        utilisateur.email = email;
+      }
+      
+      // Sauvegarder pour déclencher le middleware pre-save
+      await utilisateur.save();
+      
+      // Vérification après sauvegarde
+      const utilisateurMisAJour = await User.findById(utilisateur._id);
+      console.log('Après mise à jour - premierConnexion:', utilisateurMisAJour.premierConnexion);
+      console.log('Après mise à jour - email:', utilisateurMisAJour.email);
+      
+      res.json({ message: 'Mot de passe réinitialisé avec succès' });
+    } catch (error) {
+      console.error('Erreur lors de la réinitialisation du mot de passe:', error);
+      res.status(500).json({ 
+        message: 'Erreur lors de la réinitialisation du mot de passe',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  },
+
+  // Fonction de test pour vérifier le hachage et la comparaison (à utiliser en développement uniquement)
+  testHashAndCompare: async (req, res) => {
+    try {
+      const { motDePasse } = req.body;
+      
+      // Hacher le mot de passe
+      const salt = await bcrypt.genSalt(10);
+      const hash = await bcrypt.hash(motDePasse, salt);
+      
+      // Comparer le mot de passe avec le hash
+      const isMatch = await bcrypt.compare(motDePasse, hash);
+      
+      res.json({
+        motDePasse,
+        hash,
+        isMatch,
+        hashLength: hash.length
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 };
 
 module.exports = authController;

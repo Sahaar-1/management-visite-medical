@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Badge } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form } from 'react-bootstrap';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import api from '../../utils/axiosConfig';
 import './TableauDeBordAdmin.css';
@@ -9,33 +9,50 @@ const TableauDeBordAdmin = () => {
   const [rendezVousStats, setRendezVousStats] = useState({ aVenir: 0, termines: 0 });
   const [employesParEntite, setEmployesParEntite] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [anneeSelectionnee, setAnneeSelectionnee] = useState(new Date().getFullYear());
+  const [anneesDisponibles, setAnneesDisponibles] = useState([]);
 
   useEffect(() => {
-    const chargerDonnees = async () => {
-      try {
-        setLoading(true);
-        
-        // Récupérer les dernières connexions des médecins
-        const medecinsResponse = await api.get('/auth/medecins/connexions');
-        setMedecinConnexions(medecinsResponse.data);
-        
-        // Récupérer les statistiques des rendez-vous
-        const rdvResponse = await api.get('/rendez-vous/statistiques');
-        setRendezVousStats(rdvResponse.data);
-        
-        // Récupérer les statistiques des employés par entité
-        const employesResponse = await api.get('/employes/par-entite');
-        setEmployesParEntite(employesResponse.data);
-        
-        setLoading(false);
-      } catch (error) {
-        console.error('Erreur lors du chargement des données:', error);
-        setLoading(false);
-      }
-    };
-
-    chargerDonnees();
+    // Générer les années disponibles (année actuelle et 5 années précédentes)
+    const anneeActuelle = new Date().getFullYear();
+    const annees = [];
+    for (let i = 0; i < 6; i++) {
+      annees.push(anneeActuelle - i);
+    }
+    setAnneesDisponibles(annees);
+    
+    chargerDonnees(anneeActuelle);
   }, []);
+
+  const chargerDonnees = async (annee) => {
+    try {
+      setLoading(true);
+      
+      // Récupérer les dernières connexions des médecins
+      const medecinsResponse = await api.get('/auth/medecins/connexions');
+      setMedecinConnexions(medecinsResponse.data);
+      
+      // Récupérer les statistiques des rendez-vous pour l'année sélectionnée
+      const rdvResponse = await api.get(`/rendez-vous/statistiques?annee=${annee}`);
+      setRendezVousStats(rdvResponse.data);
+      
+      // Récupérer les statistiques des employés par entité
+      const employesResponse = await api.get('/employes/par-entite');
+      setEmployesParEntite(employesResponse.data);
+      
+      setLoading(false);
+    } catch (error) {
+      console.error('Erreur lors du chargement des données:', error);
+      setLoading(false);
+    }
+  };
+
+  // Gérer le changement d'année
+  const handleChangeAnnee = (e) => {
+    const nouvelleAnnee = parseInt(e.target.value);
+    setAnneeSelectionnee(nouvelleAnnee);
+    chargerDonnees(nouvelleAnnee);
+  };
 
   // Formatage de la date pour l'affichage
   const formatDate = (dateString) => {
@@ -86,6 +103,22 @@ const TableauDeBordAdmin = () => {
         </div>
       </div>
       
+      {/* Sélecteur d'année */}
+      <div className="year-selector-container">
+        <Form.Group>
+          <Form.Label className="year-selector-label">Filtrer par année :</Form.Label>
+          <Form.Select 
+            value={anneeSelectionnee}
+            onChange={handleChangeAnnee}
+            className="year-selector"
+          >
+            {anneesDisponibles.map(annee => (
+              <option key={annee} value={annee}>{annee}</option>
+            ))}
+          </Form.Select>
+        </Form.Group>
+      </div>
+      
       {loading ? (
         <div className="loading-container">
           <div className="spinner"></div>
@@ -101,7 +134,7 @@ const TableauDeBordAdmin = () => {
                     <i className="fas fa-calendar-check"></i>
                   </div>
                   <h3>{rendezVousStats.aVenir + rendezVousStats.termines}</h3>
-                  <p>Total des rendez-vous</p>
+                  <p>Total des rendez-vous {anneeSelectionnee}</p>
                 </Card.Body>
               </Card>
             </Col>
@@ -112,7 +145,7 @@ const TableauDeBordAdmin = () => {
                     <i className="fas fa-calendar-alt"></i>
                   </div>
                   <h3>{rendezVousStats.aVenir}</h3>
-                  <p>Rendez-vous à venir</p>
+                  <p>Rendez-vous à venir {anneeSelectionnee}</p>
                 </Card.Body>
               </Card>
             </Col>
@@ -123,7 +156,7 @@ const TableauDeBordAdmin = () => {
                     <i className="fas fa-check-circle"></i>
                   </div>
                   <h3>{rendezVousStats.termines}</h3>
-                  <p>Rendez-vous terminés</p>
+                  <p>Rendez-vous terminés {anneeSelectionnee}</p>
                 </Card.Body>
               </Card>
             </Col>
@@ -134,7 +167,7 @@ const TableauDeBordAdmin = () => {
               <Card className="dashboard-card">
                 <Card.Header className="dashboard-card-header">
                   <i className="fas fa-calendar-day me-2"></i>
-                  Statut des Rendez-vous
+                  Statut des Rendez-vous {anneeSelectionnee}
                 </Card.Header>
                 <Card.Body>
                   <div className="chart-container">
@@ -224,17 +257,6 @@ const TableauDeBordAdmin = () => {
                             <i className="fas fa-clock me-2"></i>
                             {formatDate(medecin.dernierConnexion)}
                           </p>
-                          <div className="medecin-status">
-                            {medecin.dernierConnexion ? (
-                              isRecentConnection(medecin.dernierConnexion) ? (
-                                <Badge bg="success">Connecté récemment</Badge>
-                              ) : (
-                                <Badge bg="warning">Inactif</Badge>
-                              )
-                            ) : (
-                              <Badge bg="danger">Jamais connecté</Badge>
-                            )}
-                          </div>
                         </div>
                       </div>
                     ))}

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import api from '../utils/axiosConfig';
+// import { useNavigate } from 'react-router-dom';
 
 export const AuthContext = createContext(null);
 
@@ -16,6 +17,12 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // const navigate = useNavigate();
+
+  // Ajouter cette fonction pour mettre à jour l'utilisateur
+  const updateUser = (userData) => {
+    setUser(userData);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -40,27 +47,42 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  const login = async (email, motDePasse, role) => {
+  const login = async (email, motDePasse) => {
+    setLoading(true);
+    setError(null);
+    
     try {
-      if (!email || !motDePasse || !role) {
-        throw new Error('Email, mot de passe et rôle sont requis');
-      }
-
-      const response = await api.post('/auth/connexion', {
-        email,
-        motDePasse,
-        role
-      });
-
+      const response = await api.post('/auth/connexion', { email, motDePasse });
       const { token, user } = response.data;
+      
       localStorage.setItem('token', token);
       setUser(user);
-      setError(null);
+      
+      // Vérifier si c'est la première connexion
+      if (user.premierConnexion) {
+        if (user.role === 'medecin') {
+          // Utiliser la nouvelle route pour les médecins
+          return { ...user, redirectTo: '/medecin-reset-password-first-login' };
+        } else {
+          // Route existante pour les admins
+          return { ...user, redirectTo: '/reset-password-first-login' };
+        }
+      }
+      
+      // Redirection normale selon le rôle
+      if (user.role === 'admin') {
+        return { ...user, redirectTo: '/admin/tableau-de-bord' };
+      } else if (user.role === 'medecin') {
+        return { ...user, redirectTo: '/medecin/employes' };
+      }
+      
       return user;
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Erreur de connexion';
-      setError(errorMessage);
-      throw new Error(errorMessage);
+      console.error('Erreur de connexion:', error);
+      setError(error.response?.data?.message || 'Identifiants incorrects');
+      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,11 +95,26 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfil = async (donneesProfil) => {
     try {
-      const response = await api.put('/auth/profil', donneesProfil);
+      console.log('Données reçues dans updateProfil:', donneesProfil);
+      
+      // S'assurer que le téléphone est envoyé correctement
+      const dataToSend = {
+        ...donneesProfil,
+        telephone: donneesProfil.telephone || '' // Envoyer une chaîne vide si null ou undefined
+      };
+      
+      console.log('Données à envoyer au serveur:', dataToSend);
+      
+      const response = await api.put('/auth/profil', dataToSend);
+      console.log('Réponse du serveur:', response.data);
+      
+      // Mettre à jour l'utilisateur dans le contexte
       setUser(response.data.utilisateur);
       setError(null);
+      
       return response.data.utilisateur;
     } catch (error) {
+      console.error('Erreur détaillée:', error.response?.data || error);
       const errorMessage = error.response?.data?.message || 'Erreur de mise à jour du profil';
       setError(errorMessage);
       throw new Error(errorMessage);
@@ -92,6 +129,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateProfil,
     chargerProfil,
+    updateUser, // Ajouter cette fonction
     isAuthenticated: !!user
   };
 

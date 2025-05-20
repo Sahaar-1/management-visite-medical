@@ -1,5 +1,5 @@
-import React, { useState ,useEffect} from 'react';
-import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Form, Button, Card, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import './Connexion.css';
@@ -26,8 +26,7 @@ const Connexion = () => {
 
   const [formData, setFormData] = useState({
     email: '',
-    motDePasse: '',
-    role: ''
+    motDePasse: ''
   });
 
   const handleChange = (e) => {
@@ -40,10 +39,19 @@ const Connexion = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const user = await login(formData.email, formData.motDePasse, formData.role);
+      const user = await login(formData.email, formData.motDePasse);
       
+      // Vérifier si c'est la première connexion
+      if (user.premierConnexion) {
+        if (user.role === 'medecin') {
+          navigate('/medecin-reset-password-first-login', { replace: true });
+        } else {
+          navigate('/reset-password-first-login', { replace: true });
+        }
+        return;
+      }
       
-      
+      // Sinon, rediriger selon le rôle
       switch (user.role) {
         case 'admin':
           navigate('/admin/tableau-de-bord', { replace: true });
@@ -64,7 +72,7 @@ const Connexion = () => {
       <Card className="connexion-card shadow-lg">
         <div className="connexion-content d-flex">
           {/* Partie gauche */}
-          <div className="connexion-left d-flex flex-column align-items-center justify-content-center text-white p-4">
+          <div className="connexion-left d-flex flex-column align-items-start justify-content-center text-white p-4">
             <div className="custom-logo mb-4 d-flex align-items-center justify-content-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -78,8 +86,28 @@ const Connexion = () => {
               </svg>
               <h2 className="m-0 text-white">MediConnect</h2>
             </div>
-            <h3 className="text-white">Espace Professionnel</h3>
-            <p>Gérez vos rendez-vous médicaux avec efficacité et simplicité.</p>
+            <h3 className="text-white mb-3">Espace Professionnel</h3>
+            <p className="mb-4">Gérez vos rendez-vous médicaux avec efficacité et simplicité.</p>
+            <div className="mt-4">
+              <div className="d-flex align-items-center mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-check-circle-fill me-2" viewBox="0 0 16 16">
+                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                </svg>
+                <span>Gestion des rendez-vous</span>
+              </div>
+              <div className="d-flex align-items-center mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-check-circle-fill me-2" viewBox="0 0 16 16">
+                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                </svg>
+                <span>Suivi des patients</span>
+              </div>
+              <div className="d-flex align-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-check-circle-fill me-2" viewBox="0 0 16 16">
+                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                </svg>
+                <span>Tableau de bord intuitif</span>
+              </div>
+            </div>
           </div>
 
           {/* Partie droite */}
@@ -91,7 +119,7 @@ const Connexion = () => {
                 className="ocp-logo"
               />
             </div>
-            <h4 className="login-title">Login</h4>
+            <h4 className="login-title">Connexion</h4>
             {error && <Alert variant="danger">{error}</Alert>}
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-4 form-group-custom">
@@ -118,22 +146,8 @@ const Connexion = () => {
                 <Form.Label>Mot de passe</Form.Label>
               </Form.Group>
 
-              <Form.Group className="mb-4 form-group-custom">
-                <Form.Select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Sélectionnez un rôle</option>
-                  <option value="admin">Administrateur</option>
-                  <option value="medecin">Médecin</option>
-                </Form.Select>
-                <Form.Label>Rôle</Form.Label>
-              </Form.Group>
-
-              <div className="d-grid">
-                <Button variant="success" type="submit">
+              <div className="d-grid mt-4">
+                <Button variant="success" type="submit" className="btn-success">
                   Se connecter
                 </Button>
               </div>

@@ -3,8 +3,14 @@ const bcrypt = require('bcryptjs');
 
 const createDefaultAdmin = async () => {
   try {
-    // Supprimer tous les admins existants
-    await User.deleteMany({ role: 'admin' });
+
+    // Vérifier si un admin existe déjà
+    const adminExistant = await User.findOne({ role: 'admin' });
+    
+    if (adminExistant) {
+      console.log('Admin existant trouvé, pas de création nécessaire');
+      return;
+    }
     
     // Créer l'admin avec le mot de passe non haché
     const admin = new User({
@@ -13,7 +19,8 @@ const createDefaultAdmin = async () => {
       email: 'saharelmabrouk14@gmail.com',
       motDePasse: 'admin123', // Le middleware pre('save') se chargera du hachage
       role: 'admin',
-      telephone: '0123456789'  // Ajout du numéro de téléphone requis
+      telephone: '0123456789',
+      premierConnexion: true // Définir à true pour forcer la réinitialisation
     });
 
     await admin.save();

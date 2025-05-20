@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Veuillez entrer un mot de passe'],
     minlength: 6,
-    select: true  // Temporairement changé à true pour le débogage
+    select: false  // Changer à false pour la sécurité
   },
   role: {
     type: String,
@@ -39,10 +39,17 @@ const UserSchema = new mongoose.Schema({
   },
   telephone: {
     type: String,
-    required: function() {
-      return this.role === 'medecin' || this.role === 'admin';
-    },
-    match: [/^[0-9]{10}$/, 'Veuillez entrer un numéro de téléphone valide']
+    // Supprimer la contrainte required
+    validate: {
+      validator: function(v) {
+        // Si la valeur est vide ou null, c'est valide
+        if (!v || v === '') return true;
+        
+        // Sinon, vérifier le format
+        return /^[0-9]{10}$/.test(v);
+      },
+      message: 'Le numéro de téléphone doit contenir exactement 10 chiffres'
+    }
   },
   adresse: {
     type: String
@@ -78,6 +85,10 @@ const UserSchema = new mongoose.Schema({
       },
       message: 'La spécialité est requise pour les médecins'
     }
+  },
+  premierConnexion: {
+    type: Boolean,
+    default: true
   }
 }, {
   timestamps: true
@@ -99,33 +110,33 @@ UserSchema.pre('save', async function(next) {
   try {
     const salt = await bcrypt.genSalt(10);
     this.motDePasse = await bcrypt.hash(this.motDePasse, salt);
-    console.log('Mot de passe haché avec succès');
+    console.log('Mot de passe haché avec succès pour:', this.email);
+    console.log('Hash généré (début):', this.motDePasse.substring(0, 10) + '...');
     next();
   } catch (error) {
+    console.error('Erreur lors du hachage du mot de passe:', error);
     next(error);
   }
 });
 
 // Méthode pour vérifier le mot de passe
-// Dans models/User.js
-// Améliorer la méthode comparePassword avec plus de logs
 UserSchema.methods.comparePassword = async function(candidatePassword) {
   try {
     if (!this.motDePasse) {
-      console.error('Erreur: Mot de passe non disponible dans l\'objet utilisateur');
+      console.error('Erreur: Mot de passe non disponible dans l\'objet utilisateur pour:', this.email);
       return false;
     }
     
-    console.log('Détails de comparaison:');
+    console.log('Détails de comparaison pour:', this.email);
     console.log('- Longueur du mot de passe fourni:', candidatePassword.length);
     console.log('- Longueur du hash stocké:', this.motDePasse.length);
-    console.log('- Hash stocké commence par:', this.motDePasse.substring(0, 10));
+    console.log('- Hash stocké commence par:', this.motDePasse.substring(0, 10) + '...');
     
     const isMatch = await bcrypt.compare(candidatePassword, this.motDePasse);
     console.log('- Résultat de la comparaison:', isMatch);
     return isMatch;
   } catch (error) {
-    console.error('Erreur détaillée dans comparePassword:', error);
+    console.error('Erreur détaillée dans comparePassword pour', this.email, ':', error);
     return false;
   }
 };

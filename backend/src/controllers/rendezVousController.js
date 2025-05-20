@@ -188,14 +188,31 @@ exports.getAllEmployes = async (req, res) => {
 exports.getRendezVousStats = async (req, res) => {
   try {
     const dateActuelle = new Date();
+    const annee = req.query.annee ? parseInt(req.query.annee) : dateActuelle.getFullYear();
     
-    // Compter les rendez-vous à venir (date supérieure à aujourd'hui)
-    const aVenir = await RendezVous.countDocuments({ date: { $gt: dateActuelle } });
+    // Créer les dates de début et de fin pour l'année sélectionnée
+    const debutAnnee = new Date(annee, 0, 1); // 1er janvier de l'année sélectionnée
+    const finAnnee = new Date(annee, 11, 31, 23, 59, 59); // 31 décembre de l'année sélectionnée
     
-    // Compter les rendez-vous terminés (date inférieure à aujourd'hui)
-    const termines = await RendezVous.countDocuments({ date: { $lt: dateActuelle } });
+    // Compter les rendez-vous à venir (date supérieure à aujourd'hui et dans l'année sélectionnée)
+    const aVenir = await RendezVous.countDocuments({ 
+      date: { 
+        $gt: dateActuelle,
+        $gte: debutAnnee,
+        $lte: finAnnee
+      } 
+    });
     
-    res.status(200).json({ aVenir, termines });
+    // Compter les rendez-vous terminés (date inférieure à aujourd'hui et dans l'année sélectionnée)
+    const termines = await RendezVous.countDocuments({ 
+      date: { 
+        $lt: dateActuelle,
+        $gte: debutAnnee,
+        $lte: finAnnee
+      } 
+    });
+    
+    res.status(200).json({ aVenir, termines, annee });
   } catch (error) {
     console.error('Erreur lors de la récupération des statistiques de rendez-vous:', error);
     res.status(500).json({ message: 'Erreur serveur' });

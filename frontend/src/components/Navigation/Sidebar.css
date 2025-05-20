@@ -9,23 +9,44 @@
   overflow-y: auto;
   transition: all 0.3s ease;
   z-index: 1000;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.08);
   font-family: 'Roboto', 'Segoe UI', sans-serif;
+  border-right: 1px solid #f0f0f0;
 }
 
 .sidebar:hover {
   width: 250px;
 }
 
-.sidebar-header {
-  display: none; /* Suppression du titre "Visites Médicales" */
+.sidebar-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70px;
+  padding: 0 20px;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #4CAF50;
+  color: white;
+}
+
+.sidebar-logo-icon {
+  font-size: 2.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease;
+}
+
+.sidebar:hover .sidebar-logo-icon {
+  transform: scale(1.1);
 }
 
 .sidebar-user {
-  padding: 15px 20px;
+  padding: 20px;
   border-bottom: 1px solid #f0f0f0;
   background-color: #f9f9f9;
-  margin-top: 15px;
   margin-bottom: 15px;
   white-space: nowrap;
   overflow: hidden;
@@ -33,17 +54,24 @@
   align-items: center;
 }
 
-.user-logo {
+.user-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  margin-right: 12px;
+  background-color: #4CAF50;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
   flex-shrink: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .user-info {
   display: flex;
   flex-direction: column;
+  margin-left: 15px;
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -55,23 +83,25 @@
 .user-info span {
   font-weight: 600;
   color: #333333;
-  font-size: 1.05rem;
+  font-size: 1rem;
 }
 
 .user-info small {
   color: #6c757d;
-  margin-top: 5px;
-  font-size: 0.85rem;
+  margin-top: 3px;
+  font-size: 0.8rem;
+  text-transform: capitalize;
 }
 
 .sidebar-menu {
   padding: 0;
   list-style: none;
-  margin-top: 20px;
+  margin: 20px 0;
 }
 
 .sidebar-menu li {
-  margin-bottom: 8px;
+  margin-bottom: 5px;
+  position: relative;
 }
 
 .sidebar-menu li a {
@@ -83,18 +113,27 @@
   transition: all 0.2s ease-in-out;
   border-left: 4px solid transparent;
   font-weight: 500;
-  border-radius: 0 4px 4px 0;
   white-space: nowrap;
   overflow: hidden;
 }
 
+.sidebar-menu li a svg {
+  min-width: 20px;
+  font-size: 1.2rem;
+  color: #777777;
+  transition: all 0.3s;
+  margin-right: 15px;
+}
+
 .sidebar-menu li a span {
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateX(10px);
 }
 
 .sidebar:hover .sidebar-menu li a span {
   opacity: 1;
+  transform: translateX(0);
 }
 
 .sidebar-menu li a:hover {
@@ -103,23 +142,37 @@
   border-left: 4px solid #4CAF50;
 }
 
+.sidebar-menu li a:hover svg {
+  color: #4CAF50;
+  transform: scale(1.2);
+}
+
 .sidebar-menu li.active a {
   background-color: rgba(76, 175, 80, 0.12);
   color: #4CAF50;
   border-left: 4px solid #4CAF50;
 }
 
-.sidebar-menu li a svg {
-  min-width: 1.2rem;
-  font-size: 1.2rem;
-  color: #777777;
-  transition: all 0.2s;
-  margin-right: 12px;
+.sidebar-menu li.active a svg {
+  color: #4CAF50;
 }
 
-.sidebar-menu li.active a svg,
-.sidebar-menu li a:hover svg {
-  color: #4CAF50;
+.sidebar-menu li.active::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #4CAF50;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar:hover .sidebar-menu li.active::before {
+  opacity: 1;
 }
 
 .main-content {
@@ -134,29 +187,115 @@
   margin-left: 250px;
 }
 
+/* Logout button special styling */
+.sidebar-menu li:last-child a {
+  margin-top: 20px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 15px;
+}
+
+.sidebar-menu li:last-child a:hover {
+  background-color: rgba(220, 53, 69, 0.08);
+  color: #dc3545;
+  border-left: 4px solid #dc3545;
+}
+
+.sidebar-menu li:last-child a:hover svg {
+  color: #dc3545;
+}
+
+/* Tooltip for collapsed sidebar */
+.sidebar-menu li a::after {
+  content: attr(data-title);
+  position: absolute;
+  left: 85px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+  z-index: 1001;
+}
+
+.sidebar:not(:hover) .sidebar-menu li a:hover::after {
+  opacity: 1;
+}
+
+.sidebar:hover .sidebar-menu li a::after {
+  display: none;
+}
+
+/* Responsive styles */
 @media (max-width: 768px) {
   .sidebar {
-    width: 80px;
-    box-shadow: 1px 0 5px rgba(0, 0, 0, 0.05);
+    width: 0;
+    box-shadow: none;
   }
   
-  .sidebar-header h3,
-  .user-info,
-  .sidebar-menu li a span {
-    opacity: 0;
+  .sidebar.open {
+    width: 250px;
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
   }
   
-  .sidebar-menu li a {
-    justify-content: center;
-    padding: 15px;
-  }
-  
-  .sidebar-menu li a svg {
-    margin-right: 0;
-    font-size: 1.5rem;
+  .sidebar-menu li a span,
+  .user-info {
+    opacity: 1;
+    transform: translateX(0);
   }
   
   .main-content {
-    margin-left: 80px;
+    margin-left: 0;
   }
+  
+  .sidebar.open ~ .main-content {
+    margin-left: 250px;
+  }
+  
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1002;
+    background-color: #4CAF50;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border: none;
+    transition: all 0.3s ease;
+  }
+  
+  .sidebar-toggle:hover {
+    background-color: #3d8b40;
+    transform: scale(1.05);
+  }
+}
+
+/* Animation pour l'icône de santé */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.health-icon {
+  animation: pulse 2s infinite ease-in-out;
 }
