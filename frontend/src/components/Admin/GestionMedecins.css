@@ -1,21 +1,27 @@
-/* src/components/GestionMedecins.css */
+/* Modern GestionMedecins Styles */
+@import './ModernDashboard.css';
 
-/* Container styling */
+/* Container styling - Flat design */
 .py-4 {
-  padding: 3rem;
-  background-color: #ffffff;
+  padding: 2rem;
+  background: #ffffff;
   min-height: 100vh;
 }
 
-/* Heading styling */
-h2.mb-4 {
-  color: #2ecc71; /* Professional green */
-  font-weight: 700;
+
+
+/* Modern Heading styling */
+h2.mb-4,
+.gestion-medecins-title {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   font-size: 2.5rem;
-  border-bottom: 2px solid #2ecc71;
-  padding-bottom: 0.5rem;
+  line-height: 1.2;
 }
 
 .icon-container {
@@ -68,7 +74,7 @@ h2.mb-4 {
   border: 1px solid #ced4da;
   padding: 1rem 1.5rem;
   font-size: 1.2rem;
-  background: #ffffff; /* Plain white background */
+  background: var(--bg-secondary, #ffffff);
   transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
@@ -112,97 +118,135 @@ h2.mb-4 {
   cursor: not-allowed;
 }
 
-/* Style pour les boutons d'action - même style que la page rendez-vous */
+/* Modern Action Buttons */
 .btn-action {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: transparent;
-  border: 1px solid #dee2e6;
-  margin: 0 3px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--glass-border);
+  margin: 0 0.25rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #1e3a8a;
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-card);
 }
 
 .btn-action:hover {
-  background-color: #1e3a8a;
+  background: var(--gradient-info);
   color: white;
-  border-color: #1e3a8a;
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.btn-action.btn-edit:hover {
+  background: var(--gradient-info);
+}
+
+.btn-action.btn-delete:hover {
+  background: var(--gradient-danger);
+}
+
+.btn-action.btn-reset:hover {
+  background: var(--gradient-warning);
 }
 
 .btn-action i {
-  font-size: 14px;
+  font-size: 16px;
 }
 
-/* Style pour le bouton Ajouter */
-.btn-ajouter {
-  background-color: #2ecc71; /* Match table header color */
-  border-color: #2ecc71;
-  color: white;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  border-radius: 5px;
-  transition: all 0.2s;
+/* Modern Add Button */
+.btn-ajouter,
+.btn-add-medecin {
+  background: var(--gradient-primary) !important;
+  border: none !important;
+  color: white !important;
+  padding: 0.75rem 1.5rem !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  border-radius: 15px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: var(--shadow-card) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
 }
 
-.btn-ajouter:hover {
-  background-color: #1e7e6c; /* Darker shade for hover */
-  border-color: #1e7e6c;
+.btn-ajouter:hover,
+.btn-add-medecin:hover {
+  background: var(--gradient-secondary) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-hover) !important;
 }
 
-/* Table styling */
-.table {
-  background-color: #ffffff;
+/* Removed card container - flat design */
+
+/* Flat Table styling */
+.medecins-table {
+  background: #ffffff;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin-top: 0;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e2e8f0;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
-.table thead {
-  background-color: #2ecc71; /* Professional green */
-  color: #ffffff;
+.medecins-table thead {
+  background: #4ba262;
 }
 
-.table th {
-  font-weight: 700;
-  padding: 1.5rem;
+.medecins-table th {
+  font-weight: 600;
+  padding: 1rem;
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 0.9rem;
+  color: white;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: #4ba262;
 }
 
-.table tbody tr {
-  transition: background-color 0.2s ease-in-out;
+.medecins-table th:first-child {
+  border-radius: 8px 0 0 0;
 }
 
-.table tbody tr:hover {
-  background-color: #e9ecef;
+.medecins-table th:last-child {
+  border-radius: 0 8px 0 0;
 }
 
-.table td {
-  padding: 1.5rem;
+.medecins-table tbody tr {
+  background: #ffffff;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.medecins-table tbody tr:hover {
+  background: #f8f9fa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.medecins-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.medecins-table td {
+  padding: 1rem;
   vertical-align: middle;
-  font-size: 1.1rem;
-  color: #495057;
+  font-size: 0.9rem;
+  color: #2d3748;
+  border: none;
 }
 
-.table-striped tbody tr:nth-of-type(odd) {
-  background-color: #f8f9fa;
-}
-
-.table-bordered {
-  border: 1px solid #dee2e6;
-}
-
-.table-bordered th,
-.table-bordered td {
-  border: 1px solid #dee2e6;
-}
+/* Clean flat table - no striped or bordered styling needed */
 
 /* Loading and empty states */
 .text-center {

@@ -172,7 +172,7 @@ const GestionMedecins = () => {
   };
 
   return (
-    <Container className="gestion-medecins-container">
+    <Container fluid className="gestion-medecins-container">
       <h2 className="gestion-medecins-title">Gestion des Médecins</h2>
 
       {message.text && (
@@ -181,70 +181,68 @@ const GestionMedecins = () => {
         </Alert>
       )}
 
-      <div className="medecins-list-section">
-        <div className="d-flex justify-content-end align-items-center mb-4">
-          <BootstrapButton className="btn-add-medecin" onClick={() => { resetForm(); setShowAddModal(true); }}>
-            <FaPlus /> Ajouter un médecin
-          </BootstrapButton>
+      <div className="d-flex justify-content-end align-items-center mb-4">
+        <BootstrapButton className="btn-add-medecin" onClick={() => { resetForm(); setShowAddModal(true); }}>
+          <FaPlus /> Ajouter 
+        </BootstrapButton>
+      </div>
+
+      {loading ? (
+        <div className="text-center">
+          <span>Chargement...</span>
         </div>
-        
-        {loading ? (
-          <div className="text-center">
-            <span>Chargement...</span>
-          </div>
-        ) : (
-          <Table striped bordered hover responsive>
-            <thead>
+      ) : (
+        <Table striped bordered hover responsive className="medecins-table">
+          <thead>
+            <tr>
+              <th>Médecin</th>
+              <th>Email</th>
+              <th>Spécialité</th>
+              <th>Téléphone</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {medecins.length === 0 ? (
               <tr>
-                <th>Médecin</th>
-                <th>Email</th>
-                <th>Spécialité</th>
-                <th>Téléphone</th>
-                <th>Actions</th>
+                <td colSpan="5" className="text-center">
+                  Aucun médecin trouvé
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {medecins.length === 0 ? (
-                <tr>
-                  <td colSpan="5" className="text-center">
-                    Aucun médecin trouvé
+            ) : (
+              medecins.map((medecin) => (
+                <tr key={medecin._id}>
+                  <td>
+                    <div className="d-flex align-items-center">
+                      <div className="doctor-icon">
+                        <FaUserMd />
+                      </div>
+
+                      <div className="ms-2">
+                        {medecin.nom} {medecin.prenom}
+                      </div>
+                    </div>
+                  </td>
+                  <td>{medecin.email}</td>
+                  <td>{medecin.specialite}</td>
+                  <td>{medecin.telephone || '-'}</td>
+                  <td>
+                    <button className="btn-action" onClick={() => ouvrirModalModifier(medecin)}>
+                      <FaEdit />
+                    </button>
+                    <button className="btn-action" onClick={() => ouvrirModalResetPassword(medecin)}>
+                      <FaKey />
+                    </button>
+                    <button className="btn-action" onClick={() => ouvrirModalSupprimer(medecin)}>
+                      <FaTrash />
+                    </button>
                   </td>
                 </tr>
-              ) : (
-                medecins.map((medecin) => (
-                  <tr key={medecin._id}>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <div className="doctor-icon">
-                          <FaUserMd />
-                        </div>
-                        
-                        <div className="ms-2">
-                          {medecin.nom} {medecin.prenom}
-                        </div>
-                      </div>
-                    </td>
-                    <td>{medecin.email}</td>
-                    <td>{medecin.specialite}</td>
-                    <td>{medecin.telephone || '-'}</td>
-                    <td>
-                      <button className="btn-action" onClick={() => ouvrirModalModifier(medecin)}>
-                        <FaEdit />
-                      </button>
-                      <button className="btn-action" onClick={() => ouvrirModalResetPassword(medecin)}>
-                        <FaKey />
-                      </button>
-                      <button className="btn-action" onClick={() => ouvrirModalSupprimer(medecin)}>
-                        <FaTrash />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </Table>
-        )}
-      </div>
+              ))
+            )}
+          </tbody>
+        </Table>
+      )}
 
       <Modal show={showAddModal} onHide={() => setShowAddModal(false)} backdrop="static" className="add-doctor-modal" size="lg">
           <Modal.Title>Créer un nouveau compte médecin</Modal.Title>

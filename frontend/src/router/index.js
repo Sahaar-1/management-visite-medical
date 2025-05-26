@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import App from '../App';
 import Connexion from '../components/Auth/Connexion';
 import Profil from '../components/Auth/Profil';
@@ -8,7 +8,10 @@ import GestionMedecins from '../components/Admin/GestionMedecins';
 import GestionEmployes from '../components/Admin/GestionEmployes';
 import GestionRendezVous from '../components/Admin/GestionRendezVous';
 import TableauDeBordAdmin from '../components/Admin/TableauDeBordAdmin';
+import AdminNotifications from '../components/Admin/Notifications';
 import ListeEmployes from '../components/Medecin/ListeEmployes';
+import HistoriqueConsultations from '../components/Medecin/HistoriqueConsultations';
+import TableauDeBordMedecin from '../components/Medecin/TableauDeBordMedecin';
 import ProtectedRoute from '../components/Auth/ProtectedRoute';
 
 const routes = [
@@ -18,7 +21,7 @@ const routes = [
     children: [
       {
         path: '/',
-        element: <ProtectedRoute />,
+        element: <Navigate to="/connexion" replace />,
         index: true
       },
       {
@@ -56,6 +59,10 @@ const routes = [
           {
             path: 'rendez-vous',
             element: <GestionRendezVous />
+          },
+          {
+            path: 'notifications',
+            element: <AdminNotifications />
           }
         ]
       },
@@ -64,8 +71,17 @@ const routes = [
         element: <ProtectedRoute allowedRoles={['medecin']} />,
         children: [
           {
+            path: 'dashboard',
+            element: <TableauDeBordMedecin />
+          },
+          {
             path: 'employes',
             element: <ListeEmployes />
+          },
+
+          {
+            path: 'historique',
+            element: <HistoriqueConsultations />
           }
         ]
       }

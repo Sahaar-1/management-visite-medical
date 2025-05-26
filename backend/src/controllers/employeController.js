@@ -12,7 +12,7 @@ exports.getAllEmployees = async (req, res) => {
 
 // Create a new employee
 exports.createEmployee = async (req, res) => {
-  const { matricule, nom, prenom, entite } = req.body;
+  const { matricule, nom, prenom, entite, telephone, dateDerniereVisiteMedicale } = req.body;
 
   try {
     const employee = new Employee({
@@ -20,6 +20,8 @@ exports.createEmployee = async (req, res) => {
       nom,
       prenom,
       entite,
+      telephone,
+      dateDerniereVisiteMedicale: dateDerniereVisiteMedicale ? new Date(dateDerniereVisiteMedicale) : null
     });
     const savedEmployee = await employee.save();
     res.status(201).json(savedEmployee);
@@ -32,10 +34,34 @@ exports.createEmployee = async (req, res) => {
 exports.updateEmployee = async (req, res) => {
   try {
     const { id } = req.params;
-    const { matricule, nom, prenom, entite } = req.body;
+    const { matricule, nom, prenom, entite, telephone, dateDerniereVisiteMedicale } = req.body;
+
+    const updateData = { matricule, nom, prenom, entite, telephone };
+    if (dateDerniereVisiteMedicale !== undefined) {
+      updateData.dateDerniereVisiteMedicale = dateDerniereVisiteMedicale ? new Date(dateDerniereVisiteMedicale) : null;
+    }
+
+    // Si aucune date manuelle n'est fournie, essayer de récupérer la dernière consultation
+    if (!dateDerniereVisiteMedicale) {
+      try {
+        const Historique = require('../models/Historique');
+        const derniereConsultation = await Historique.findOne({
+          employe: id,
+          statut: 'FAITE'
+        }).sort({ dateConsultation: -1 });
+
+        if (derniereConsultation) {
+          updateData.dateDerniereVisiteMedicale = derniereConsultation.dateConsultation;
+        }
+      } catch (histError) {
+        console.log('Erreur lors de la récupération de la dernière consultation:', histError);
+        // Ne pas faire échouer la mise à jour si la récupération échoue
+      }
+    }
+
     const updatedEmployee = await Employee.findByIdAndUpdate(
       id,
-      { matricule, nom, prenom, entite },
+      updateData,
       { new: true, runValidators: true }
     );
     if (!updatedEmployee) {
@@ -45,7 +71,7 @@ exports.updateEmployee = async (req, res) => {
     // Mettre à jour les informations de l'employé dans les rendez-vous
     // Vérifier si l'employé est associé à un utilisateur
     const User = require('../models/User');
-    const user = await User.findOne({ 
+    const user = await User.findOne({
       $or: [
         { _id: id },
         { employe: id }
@@ -57,7 +83,7 @@ exports.updateEmployee = async (req, res) => {
       user.nom = nom;
       user.prenom = prenom;
       await user.save();
-      
+
       // Mettre à jour les rendez-vous associés à cet utilisateur
       const RendezVous = require('../models/RendezVous');
       await RendezVous.updateMany(

@@ -4,27 +4,32 @@ import { AuthContext } from '../../contexts/AuthContext';
 import './Profil.css';
 
 const Profil = () => {
-  const { user, updateProfil } = useContext(AuthContext);
+  const { user, updateProfil, updateToken } = useContext(AuthContext);
   const [message, setMessage] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
     email: '',
     telephone: '',
-    specialite: ''
+    specialite: '',
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
   });
 
   // Charger les données utilisateur
   useEffect(() => {
     if (user) {
-      console.log('Données utilisateur reçues:', user);
-      
       setFormData({
         nom: user.nom || '',
         prenom: user.prenom || '',
         email: user.email || '',
         telephone: user.telephone || '',
-        specialite: user.specialite || ''
+        specialite: user.specialite || '',
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
       });
     }
   }, [user]);
@@ -33,20 +38,60 @@ const Profil = () => {
     e.preventDefault();
     
     try {
-      // Validation simplifiée
+      // Validation du téléphone
       if (formData.telephone && !/^[0-9]{10}$/.test(formData.telephone)) {
         setMessage('Le numéro de téléphone doit contenir exactement 10 chiffres');
         return;
       }
-      
-      console.log('Données à envoyer:', formData);
-      
-      const updatedUser = await updateProfil(formData);
-      console.log('Profil mis à jour:', updatedUser);
+
+      // Validation du mot de passe si modification demandée
+      if (formData.newPassword || formData.email !== user.email) {
+        if (!formData.currentPassword) {
+          setMessage('Le mot de passe actuel est requis pour modifier l\'email ou le mot de passe');
+          return;
+        }
+
+        if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
+          setMessage('Les nouveaux mots de passe ne correspondent pas');
+          return;
+        }
+
+        if (formData.newPassword && formData.newPassword.length < 6) {
+          setMessage('Le nouveau mot de passe doit contenir au moins 6 caractères');
+          return;
+        }
+      }
+
+      const dataToUpdate = {
+        nom: formData.nom,
+        prenom: formData.prenom,
+        email: formData.email,
+        telephone: formData.telephone,
+        specialite: formData.specialite,
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword
+      };
+
+      const response = await updateProfil(dataToUpdate);
       setMessage('Profil mis à jour avec succès');
+
+      // Réinitialiser les champs de mot de passe
+      setFormData(prev => ({
+        ...prev,
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      }));
+
+      // Si un nouveau token est reçu (changement d'email), mettre à jour le contexte
+      if (response.token) {
+        // Mettre à jour le token dans le localStorage et le contexte
+        localStorage.setItem('token', response.token);
+        // Vous devrez implémenter cette fonction dans votre AuthContext
+        updateToken(response.token);
+      }
     } catch (err) {
-      console.error('Erreur lors de la mise à jour:', err);
-      setMessage(err.message || 'Erreur lors de la mise à jour du profil');
+      setMessage(err.response?.data?.message || 'Erreur lors de la mise à jour du profil');
     }
   };
 
@@ -60,6 +105,19 @@ const Profil = () => {
     
     // Effacer le message d'erreur
     setMessage('');
+  };
+
+  const toggleEdit = () => {
+    setIsEditing(!isEditing);
+    if (!isEditing) {
+      // Réinitialiser les champs de mot de passe lors du passage en mode édition
+      setFormData(prev => ({
+        ...prev,
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      }));
+    }
   };
 
   return (
@@ -78,9 +136,27 @@ const Profil = () => {
       </div>
 
       <Card className="profile-card">
-        <Card.Header>
-          <i className="bi bi-pencil-square card-header-icon"></i>
-          <h3>Modifier Mon Profil</h3>
+        <Card.Header className="d-flex justify-content-between align-items-center">
+          <div>
+            <i className="bi bi-pencil-square card-header-icon"></i>
+            <h3 className="d-inline">Mon Profil</h3>
+          </div>
+          <Button 
+            variant={isEditing ? "secondary" : "primary"} 
+            onClick={toggleEdit}
+          >
+            {isEditing ? (
+              <>
+                <i className="bi bi-x-circle me-2"></i>
+                Annuler
+              </>
+            ) : (
+              <>
+                <i className="bi bi-pencil me-2"></i>
+                Modifier
+              </>
+            )}
+          </Button>
         </Card.Header>
         <Card.Body>
           {message && (
@@ -94,104 +170,152 @@ const Profil = () => {
               <Form.Label>
                 <i className="bi bi-person-vcard form-label-icon"></i> Nom
               </Form.Label>
-              <Form.Control
-                type="text"
-                name="nom"
-                value={formData.nom}
-                onChange={handleChange}
-                required
-                className="form-control-custom"
-              />
+              {isEditing ? (
+                <Form.Control
+                  type="text"
+                  name="nom"
+                  value={formData.nom}
+                  onChange={handleChange}
+                  required
+                  className="form-control-custom"
+                />
+              ) : (
+                <p className="form-control-static">{formData.nom}</p>
+              )}
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>
                 <i className="bi bi-type form-label-icon"></i> Prénom
               </Form.Label>
-              <Form.Control
-                type="text"
-                name="prenom"
-                value={formData.prenom}
-                onChange={handleChange}
-                required
-                className="form-control-custom"
-              />
+              {isEditing ? (
+                <Form.Control
+                  type="text"
+                  name="prenom"
+                  value={formData.prenom}
+                  onChange={handleChange}
+                  required
+                  className="form-control-custom"
+                />
+              ) : (
+                <p className="form-control-static">{formData.prenom}</p>
+              )}
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>
                 <i className="bi bi-envelope form-label-icon"></i> Email
               </Form.Label>
-              <Form.Control
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                disabled
-                className="form-control-custom"
-              />
+              {isEditing ? (
+                <Form.Control
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="form-control-custom"
+                />
+              ) : (
+                <p className="form-control-static">{formData.email}</p>
+              )}
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>
                 <i className="bi bi-telephone form-label-icon"></i> Téléphone
               </Form.Label>
-              <Form.Control
-                type="tel"
-                name="telephone"
-                value={formData.telephone}
-                onChange={handleChange}
-                className="form-control-custom"
-                placeholder="Entrez votre numéro de téléphone"
-              />
-              <Form.Text className="text-muted">
-                Format: 10 chiffres sans espaces ni caractères spéciaux (ex: 0612345678)
-              </Form.Text>
+              {isEditing ? (
+                <>
+                  <Form.Control
+                    type="tel"
+                    name="telephone"
+                    value={formData.telephone}
+                    onChange={handleChange}
+                    className="form-control-custom"
+                    placeholder="Entrez votre numéro de téléphone"
+                  />
+                  <Form.Text className="text-muted">
+                    Format: 10 chiffres sans espaces ni caractères spéciaux (ex: 0612345678)
+                  </Form.Text>
+                </>
+              ) : (
+                <p className="form-control-static">{formData.telephone || 'Non renseigné'}</p>
+              )}
             </Form.Group>
 
             {user?.role === 'medecin' && (
               <Form.Group className="mb-3">
                 <Form.Label>
-                  <i className="bi bi-hospital form-label-icon"></i> Spécialité
+                  <i className="bi bi-heart-pulse form-label-icon"></i> Spécialité
                 </Form.Label>
-                <Form.Control
-                  type="text"
-                  name="specialite"
-                  value={formData.specialite}
-                  onChange={handleChange}
-                  required
-                  className="form-control-custom"
-                />
+                {isEditing ? (
+                  <Form.Control
+                    type="text"
+                    name="specialite"
+                    value={formData.specialite}
+                    onChange={handleChange}
+                    className="form-control-custom"
+                  />
+                ) : (
+                  <p className="form-control-static">{formData.specialite || 'Non renseigné'}</p>
+                )}
               </Form.Group>
             )}
 
-            <div className="user-info mt-4">
-              <p>
-                <i className={`bi ${user?.role === 'medecin' ? 'bi-heart-pulse' : 'bi-person-badge'} user-info-icon`}></i>
-                <strong>Rôle :</strong> {user?.role === 'medecin' ? 'Médecin' : 'Administrateur'}
-              </p>
-              {user?.dernierConnexion && (
-                <p>
-                  <i className="bi bi-clock user-info-icon"></i>
-                  <strong>Dernière connexion :</strong>{' '}
-                  {new Date(user.dernierConnexion).toLocaleString('fr-FR', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </p>
-              )}
-            </div>
+            {isEditing && (
+              <>
+                <hr />
+                <h5>Modification du mot de passe</h5>
+                <Form.Group className="mb-3">
+                  <Form.Label>
+                    <i className="bi bi-key form-label-icon"></i> Mot de passe actuel
+                  </Form.Label>
+                  <Form.Control
+                    type="password"
+                    name="currentPassword"
+                    value={formData.currentPassword}
+                    onChange={handleChange}
+                    className="form-control-custom"
+                    placeholder="Requis pour modifier l'email ou le mot de passe"
+                  />
+                </Form.Group>
 
-            <div className="d-flex justify-content-end mt-4">
-              <Button variant="primary" type="submit" className="btn-custom">
-                <i className="bi bi-save btn-icon"></i>
-                Mettre à jour
+                <Form.Group className="mb-3">
+                  <Form.Label>
+                    <i className="bi bi-key-fill form-label-icon"></i> Nouveau mot de passe
+                  </Form.Label>
+                  <Form.Control
+                    type="password"
+                    name="newPassword"
+                    value={formData.newPassword}
+                    onChange={handleChange}
+                    className="form-control-custom"
+                    placeholder="Laissez vide pour ne pas modifier"
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>
+                    <i className="bi bi-key-fill form-label-icon"></i> Confirmer le nouveau mot de passe
+                  </Form.Label>
+                  <Form.Control
+                    type="password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className="form-control-custom"
+                    placeholder="Confirmez le nouveau mot de passe"
+                  />
+                </Form.Group>
+              </>
+            )}
+
+            {isEditing && (
+              <Button type="submit" variant="success" className="w-100">
+                <i className="bi bi-check-circle me-2"></i>
+                Enregistrer les modifications
               </Button>
-            </div>
+            )}
           </Form>
         </Card.Body>
       </Card>

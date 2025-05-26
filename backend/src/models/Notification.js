@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
-const NotificationSchema = new mongoose.Schema({
+const notificationSchema = new mongoose.Schema({
+  destinataire: {
+    type: String,
+    enum: ['admin', 'medecin', 'employe'],
+    required: true
+  },
   titre: {
     type: String,
     required: true,
@@ -13,24 +18,46 @@ const NotificationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['info', 'success', 'warning', 'danger'],
-    default: 'info'
+    enum: ['CONSULTATION', 'RENDEZ_VOUS', 'SYSTEME', 'AUTRE'],
+    required: true
   },
-  lue: {
+  lu: {
     type: Boolean,
     default: false
   },
-  destinataire: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+  dateCreation: {
+    type: Date,
+    default: Date.now
   },
-  lien: {
-    type: String,
-    trim: true
+  employe: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Employe',
+    required: false
+  },
+  details: {
+    type: mongoose.Schema.Types.Mixed,
+    required: false
+  },
+  archived: {
+    type: Boolean,
+    default: false
   }
-}, {
-  timestamps: true
 });
 
-module.exports = mongoose.model('Notification', NotificationSchema);
+// Méthode statique pour archiver les notifications anciennes
+notificationSchema.statics.archiverAnciennesNotifications = async function() {
+  const dateLimite = new Date();
+  dateLimite.setDate(dateLimite.getDate() - 30); // Archiver après 30 jours
+  
+  return this.updateMany(
+    { 
+      dateCreation: { $lt: dateLimite },
+      archived: false
+    },
+    { 
+      $set: { archived: true } 
+    }
+  );
+};
+
+module.exports = mongoose.model('Notification', notificationSchema);

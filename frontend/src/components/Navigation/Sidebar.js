@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  FaUserMd, 
-  FaUsers, 
-  FaCalendarAlt, 
-  FaSignOutAlt, 
-  FaChartBar, 
-  FaUser,
-  FaHeartbeat,
-  FaBars
+import {
+  FaHeartbeat, FaChartBar, FaUserMd, FaUsers,
+  FaCalendarAlt, FaUser, FaSignOutAlt, FaBars,
+  FaStethoscope, FaBell, FaHistory
 } from 'react-icons/fa';
 import './Sidebar.css';
+import '../Admin/ModernDashboard.css';
 
 const Sidebar = () => {
   const { user, logout } = useAuth();
@@ -49,14 +45,15 @@ const Sidebar = () => {
           <FaBars />
         </button>
       )}
-      
+
       <div className={`sidebar ${isMobile && isOpen ? 'open' : ''}`}>
         <div className="sidebar-logo">
           <div className="sidebar-logo-icon health-icon">
             <FaHeartbeat />
           </div>
+          <h2>MedVisit</h2>
         </div>
-        
+
         <div className="sidebar-user">
           <div className="user-avatar">
             {getInitials()}
@@ -66,7 +63,7 @@ const Sidebar = () => {
             <small>{user?.role}</small>
           </div>
         </div>
-        
+
         <ul className="sidebar-menu">
           {user?.role === 'admin' && (
             <>
@@ -94,25 +91,46 @@ const Sidebar = () => {
                   <span>Rendez-vous</span>
                 </Link>
               </li>
+              <li className={isActive('/admin/notifications')}>
+                <Link to="/admin/notifications" data-title="Notifications">
+                  <FaBell />
+                  <span>Notifications</span>
+                </Link>
+              </li>
             </>
           )}
-          
+
           {user?.role === 'medecin' && (
-            <li className={isActive('/medecin/employes')}>
-              <Link to="/medecin/employes" data-title="Employés">
-                <FaUsers />
-                <span>Employés</span>
-              </Link>
-            </li>
+            <>
+              <li className={isActive('/medecin/dashboard')}>
+                <Link to="/medecin/dashboard" data-title="Tableau de bord">
+                  <FaChartBar />
+                  <span>Tableau de bord</span>
+                </Link>
+              </li>
+              <li className={isActive('/medecin/employes')}>
+                <Link to="/medecin/employes" data-title="Employés">
+                  <FaStethoscope />
+                  <span>Employés</span>
+                </Link>
+              </li>
+
+              <li className={isActive('/medecin/historique')}>
+                <Link to="/medecin/historique" data-title="Historique">
+                  <FaHistory />
+                  <span>Historique</span>
+                </Link>
+              </li>
+            </>
           )}
-          
+
           <li className={isActive('/profil')}>
             <Link to="/profil" data-title="Mon profil">
               <FaUser />
               <span>Mon profil</span>
             </Link>
           </li>
-          
+
           <li>
             <Link to="#" onClick={logout} data-title="Déconnexion">
               <FaSignOutAlt />

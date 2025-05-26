@@ -97,10 +97,31 @@ const GestionRendezVous = () => {
   const estDejaAssigne = (employeId) => {
     if (!formData.date) return false;
     const anneeSelectionnee = new Date(formData.date).getFullYear();
+
+    // Si on est en mode édition et que l'employé est déjà sélectionné, on l'autorise
     if (editMode && selectedEmployes.some((emp) => emp._id === employeId)) {
       return false;
     }
-    return employesAssignes[anneeSelectionnee] && employesAssignes[anneeSelectionnee].has(employeId);
+
+    // Vérifier s'il a déjà un rendez-vous programmé cette année
+    const aRendezVousProgramme = employesAssignes[anneeSelectionnee] && employesAssignes[anneeSelectionnee].has(employeId);
+
+    // Vérifier s'il a déjà fait sa visite médicale cette année
+    const employe = employes.find(emp => emp._id === employeId);
+    let aVisiteCetteAnnee = false;
+
+    if (employe && employe.dateDerniereVisiteMedicale) {
+      const dateDerniereVisite = new Date(employe.dateDerniereVisiteMedicale);
+      const anneeDerniereVisite = dateDerniereVisite.getFullYear();
+      const maintenant = new Date();
+
+      // Si la dernière visite est dans la même année que le RDV ET n'est pas dans le futur
+      if (anneeDerniereVisite === anneeSelectionnee && dateDerniereVisite <= maintenant) {
+        aVisiteCetteAnnee = true;
+      }
+    }
+
+    return aRendezVousProgramme || aVisiteCetteAnnee;
   };
 
   const handleEmployeDoubleClick = (employe) => {
@@ -115,9 +136,33 @@ const GestionRendezVous = () => {
     } else {
       if (formData.date && estDejaAssigne(employe._id)) {
         const anneeSelectionnee = new Date(formData.date).getFullYear();
+
+        // Déterminer la raison du blocage
+        const aRendezVousProgramme = employesAssignes[anneeSelectionnee] && employesAssignes[anneeSelectionnee].has(employe._id);
+        let aVisiteCetteAnnee = false;
+
+        if (employe.dateDerniereVisiteMedicale) {
+          const dateDerniereVisite = new Date(employe.dateDerniereVisiteMedicale);
+          const anneeDerniereVisite = dateDerniereVisite.getFullYear();
+          const maintenant = new Date();
+
+          if (anneeDerniereVisite === anneeSelectionnee && dateDerniereVisite <= maintenant) {
+            aVisiteCetteAnnee = true;
+          }
+        }
+
+        let messageText = '';
+        if (aVisiteCetteAnnee && aRendezVousProgramme) {
+          messageText = `${employe.nom} ${employe.prenom} a déjà effectué sa visite médicale en ${anneeSelectionnee} ET a un autre rendez-vous programmé. Chaque employé ne peut avoir qu'une seule visite par an.`;
+        } else if (aVisiteCetteAnnee) {
+          messageText = `${employe.nom} ${employe.prenom} a déjà effectué sa visite médicale en ${anneeSelectionnee}. Chaque employé ne peut avoir qu'une seule visite par an.`;
+        } else if (aRendezVousProgramme) {
+          messageText = `${employe.nom} ${employe.prenom} a déjà un rendez-vous médical programmé pour l'année ${anneeSelectionnee}. Chaque employé ne peut avoir qu'un seul rendez-vous par an.`;
+        }
+
         setMessage({
           type: 'warning',
-          text: `${employe.nom} ${employe.prenom} a déjà un rendez-vous médical programmé pour l'année ${anneeSelectionnee}. Chaque employé ne peut avoir qu'un seul rendez-vous par an.`
+          text: messageText
         });
         return;
       }
@@ -315,8 +360,8 @@ const GestionRendezVous = () => {
             <i className="fas fa-calendar-alt me-2"></i>
             Gestion des Rendez-vous Médicaux
           </h2>
-          <Button 
-            variant="primary" 
+          <Button
+            variant="primary"
             className="btn-add-rdv"
             onClick={() => {
               setEditMode(false);
@@ -348,7 +393,7 @@ const GestionRendezVous = () => {
           {regrouperRendezVousParAnnee().map((groupe) => (
             <div key={groupe.annee} className="mb-4">
               <h5 className="section-header">Année {groupe.annee}</h5>
-              <Table responsive hover className="table">
+              <Table responsive hover className="rendez-vous-table">
                 <thead>
                   <tr>
                     <th>DATE</th>
@@ -364,12 +409,12 @@ const GestionRendezVous = () => {
                     const maintenant = new Date();
                     let statut = 'À venir';
                     let badgeClass = 'bg-warning';
-                    
+
                     if (dateRdv < maintenant) {
                       statut = 'Terminé';
                       badgeClass = 'bg-success';
                     }
-                    
+
                     return (
                       <tr key={rdv._id}>
                         <td>{formatDate(rdv.date)}</td>
@@ -412,7 +457,7 @@ const GestionRendezVous = () => {
               </Table>
             </div>
           ))}
-          
+
           {rendezVous.length === 0 && (
             <div className="empty-state">
               <i className="fas fa-calendar-times mb-3"></i>
@@ -424,11 +469,11 @@ const GestionRendezVous = () => {
       </Card>
 
       {/* Modal pour ajouter/modifier un rendez-vous */}
-      <Modal 
-        show={showAddModal} 
-        onHide={handleCancelEdit} 
-        size="xl" 
-        centered 
+      <Modal
+        show={showAddModal}
+        onHide={handleCancelEdit}
+        size="xl"
+        centered
         className="rdv-modal"
       >
         <Modal.Header closeButton>
@@ -540,7 +585,7 @@ const GestionRendezVous = () => {
                 </Card.Body>
               </Card>
             </Col>
-            
+
             <Col md={6}>
               <Card>
                 <Card.Header>
@@ -580,11 +625,41 @@ const GestionRendezVous = () => {
                               </div>
                               <div>
                                 <small className="text-muted">{employe.entite}</small>
-                                {isAssigned && !isSelected && (
-                                  <Badge bg="warning" className="ms-2">
-                                    Déjà programmé
-                                  </Badge>
-                                )}
+                                {isAssigned && !isSelected && (() => {
+                                  const anneeSelectionnee = new Date(formData.date).getFullYear();
+                                  const aRendezVousProgramme = employesAssignes[anneeSelectionnee] && employesAssignes[anneeSelectionnee].has(employe._id);
+                                  let aVisiteCetteAnnee = false;
+
+                                  if (employe.dateDerniereVisiteMedicale) {
+                                    const dateDerniereVisite = new Date(employe.dateDerniereVisiteMedicale);
+                                    const anneeDerniereVisite = dateDerniereVisite.getFullYear();
+                                    const maintenant = new Date();
+
+                                    if (anneeDerniereVisite === anneeSelectionnee && dateDerniereVisite <= maintenant) {
+                                      aVisiteCetteAnnee = true;
+                                    }
+                                  }
+
+                                  let badgeText = 'Déjà programmé';
+                                  let badgeColor = 'warning';
+
+                                  if (aVisiteCetteAnnee && aRendezVousProgramme) {
+                                    badgeText = 'Visite faite + RDV';
+                                    badgeColor = 'info';
+                                  } else if (aVisiteCetteAnnee) {
+                                    badgeText = 'Visite déjà faite';
+                                    badgeColor = 'success';
+                                  } else if (aRendezVousProgramme) {
+                                    badgeText = 'RDV programmé';
+                                    badgeColor = 'warning';
+                                  }
+
+                                  return (
+                                    <Badge bg={badgeColor} className="ms-2">
+                                      {badgeText}
+                                    </Badge>
+                                  );
+                                })()}
                               </div>
                             </div>
                           </ListGroup.Item>
@@ -605,8 +680,8 @@ const GestionRendezVous = () => {
       </Modal>
 
       {/* Modal pour afficher les détails d'un rendez-vous */}
-      <Modal 
-        show={selectedRendezVous !== null && !editMode} 
+      <Modal
+        show={selectedRendezVous !== null && !editMode}
         onHide={() => setSelectedRendezVous(null)}
         centered
         className="rdv-modal"
@@ -636,15 +711,15 @@ const GestionRendezVous = () => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button 
-            variant="outline-secondary" 
+          <Button
+            variant="outline-secondary"
             onClick={() => setSelectedRendezVous(null)}
           >
             Fermer
           </Button>
           {selectedRendezVous && (
-            <Button 
-              variant="primary" 
+            <Button
+              variant="primary"
               onClick={() => {
                 handleEdit(selectedRendezVous);
                 setSelectedRendezVous(null);

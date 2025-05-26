@@ -220,8 +220,9 @@ async function importEmployes() {
 76872 	 KAZBIR 	 Abdelmajid 	 OIG/B/M 
 76881 	 ABID ALLAH 	 Mohammed 	 OIG/B/M 
 76882 	 DOURTI 	 Abderrahim 	 OIG/B/M 
-76990 	 BEDDAD 	 Jaouad 	 OIG/B/E/I`;
-
+76990 	 BEDDAD 	 Jaouad 	 OIG/B/E/I 
+76993 	 ZARHOUNI 	 Abdelhak 	 OIG/B/E/I 
+77191 	 MOUNIB 	 Issam 	 OIG/B/E/T`;
     // Traiter les données
     const employes = employesData.split('\n').map(line => {
       const parts = line.trim().split(/\s+/);

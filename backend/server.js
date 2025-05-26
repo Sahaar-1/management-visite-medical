@@ -33,7 +33,12 @@ mongoose.plugin(mongoosePaginate);
 
 // Routes
 const authRoutes = require('./src/routes/authRoutes');
-const employeRoutes = require('./src/routes/employeRoutes'); // Ensure this is included
+const employeRoutes = require('./src/routes/employeRoutes');
+const consultationRoutes = require('./src/routes/consultationRoutes');
+const notificationRoutes = require('./src/routes/notificationRoutes');
+const historiqueRoutes = require('./src/routes/historiqueRoutes');
+
+ // Ensure this is included
 // Commenté pour se concentrer uniquement sur l'authentification
 // const employeRoutes = require('./src/routes/employeRoutes');
 // const serviceRoutes = require('./src/routes/serviceRoutes');
@@ -45,11 +50,12 @@ app.get('/api', (req, res) => {
 
 // Routes de l'API avec préfixe /api
 app.use('/api/auth', authRoutes);
-// Modifier cette ligne
 app.use('/api/employes', employeRoutes);
-// app.use('/api/services', serviceRoutes);
-// app.use('/api/notifications', require('./src/routes/notificationRoutes'));
+app.use('/api/consultations', consultationRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/historique', historiqueRoutes);
 app.use('/api/rendez-vous', rendezVousRoutes);
+
 // Middleware pour gérer CORS
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -69,9 +75,9 @@ app.use((req, res, next) => {
 // Gestionnaire d'erreurs global
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ 
-    message: 'Une erreur serveur est survenue', 
-    error: process.env.NODE_ENV === 'production' ? {} : err.message 
+  res.status(500).json({
+    message: 'Une erreur serveur est survenue',
+    error: process.env.NODE_ENV === 'production' ? {} : err.message
   });
 });
 

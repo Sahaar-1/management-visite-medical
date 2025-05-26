@@ -247,59 +247,85 @@ const authController = {
   // Mettre à jour le profil
   mettreAJourProfil: async (req, res) => {
     try {
-      const { nom, prenom, telephone, adresse, specialite } = req.body;
+      const { nom, prenom, telephone, adresse, specialite, email, currentPassword, newPassword } = req.body;
       
-      // Logs détaillés pour le débogage
-      console.log('Mise à jour du profil pour:', req.user.email);
-      console.log('Données reçues:', req.body);
-      console.log('Téléphone reçu:', telephone, 'Type:', typeof telephone);
+      const userId = req.user._id;
+      const user = await User.findById(userId).select('+motDePasse');
 
-      // Validation simplifiée du téléphone
-      if (telephone && !/^[0-9]{10}$/.test(telephone)) {
-        return res.status(400).json({ 
-          message: 'Le numéro de téléphone doit contenir exactement 10 chiffres' 
-        });
-      }
-
-      // Mise à jour directe avec findByIdAndUpdate pour éviter les problèmes de validation
-      const updateData = {};
-      if (nom) updateData.nom = nom;
-      if (prenom) updateData.prenom = prenom;
-      // Toujours inclure le téléphone, même s'il est vide
-      updateData.telephone = telephone;
-      if (adresse) updateData.adresse = adresse;
-      if (specialite && req.user.role === 'medecin') updateData.specialite = specialite;
-
-      console.log('Données de mise à jour:', updateData);
-
-      // Utiliser findByIdAndUpdate avec runValidators: false pour contourner les validations
-      const utilisateur = await User.findByIdAndUpdate(
-        req.user._id,
-        updateData,
-        { new: true, runValidators: false }
-      );
-      
-      if (!utilisateur) {
+      if (!user) {
         return res.status(404).json({ message: 'Utilisateur non trouvé' });
       }
 
-      console.log('Profil mis à jour avec succès');
-      console.log('Nouveau téléphone:', utilisateur.telephone);
+      // Si l'utilisateur veut changer son email ou mot de passe, vérifier le mot de passe actuel
+      if ((email && email !== user.email) || newPassword) {
+        if (!currentPassword) {
+          return res.status(400).json({ 
+            message: 'Le mot de passe actuel est requis pour modifier l\'email ou le mot de passe' 
+          });
+        }
 
-      // Retourner la réponse avec tous les champs pertinents
+        const isPasswordValid = await user.comparePassword(currentPassword);
+        if (!isPasswordValid) {
+          return res.status(401).json({ message: 'Mot de passe actuel incorrect' });
+        }
+      }
+
+      // Vérifier si le nouvel email est déjà utilisé
+      if (email && email !== user.email) {
+        const emailExists = await User.findOne({ email, _id: { $ne: userId } });
+        if (emailExists) {
+          return res.status(400).json({ message: 'Cet email est déjà utilisé' });
+        }
+      }
+
+      // Préparer les données à mettre à jour
+      const updateData = {
+        nom: nom || user.nom,
+        prenom: prenom || user.prenom,
+        telephone: telephone || user.telephone,
+        adresse: adresse || user.adresse,
+        specialite: specialite || user.specialite
+      };
+
+      // Mettre à jour l'email si fourni
+      if (email) {
+        updateData.email = email;
+      }
+
+      // Mettre à jour le mot de passe si fourni
+      if (newPassword) {
+        if (newPassword.length < 6) {
+          return res.status(400).json({ 
+            message: 'Le nouveau mot de passe doit contenir au moins 6 caractères' 
+          });
+        }
+        updateData.motDePasse = newPassword;
+      }
+
+      // Mettre à jour l'utilisateur
+      user.set(updateData);
+      await user.save();
+
+      // Générer un nouveau token si l'email a été modifié
+      let newToken = null;
+      if (email && email !== user.email) {
+        newToken = authMiddleware.genererToken(user);
+      }
+
       res.json({
         message: 'Profil mis à jour avec succès',
         utilisateur: {
-          _id: utilisateur._id,
-          nom: utilisateur.nom,
-          prenom: utilisateur.prenom,
-          email: utilisateur.email,
-          role: utilisateur.role,
-          telephone: utilisateur.telephone,
-          adresse: utilisateur.adresse,
-          specialite: utilisateur.specialite,
-          service: utilisateur.service
-        }
+          _id: user._id,
+          nom: user.nom,
+          prenom: user.prenom,
+          email: user.email,
+          role: user.role,
+          telephone: user.telephone,
+          adresse: user.adresse,
+          specialite: user.specialite,
+          service: user.service
+        },
+        token: newToken // Nouveau token si l'email a été modifié
       });
     } catch (error) {
       console.error('Erreur de mise à jour du profil:', error);

@@ -1,95 +1,160 @@
+
+// Route لإنشاء إشعار
+
+
 const Notification = require('../models/Notification');
 
-const notificationController = {
-  // Créer une notification
-  creerNotification: async (employe, medecin, dateVisite, typeInaptitude, observation) => {
-    try {
-      // Créer une notification pour l'administrateur
-      const notification = new Notification({
-        titre: `Inaptitude ${typeInaptitude} détectée`,
-        message: `L'employé ${employe.nom} ${employe.prenom} a été déclaré INAPTE pour ${typeInaptitude} lors de sa visite médicale du ${new Date(dateVisite).toLocaleDateString('fr-FR')}. Observation: ${observation}`,
-        type: 'warning',
-        destinataire: employe.utilisateur || employe._id,
-        lien: `/employes/${employe._id}`
-      });
-      
-      await notification.save();
-      return notification;
-    } catch (error) {
-      console.error('Erreur lors de la création de la notification:', error);
-      throw error;
-    }
-  },
-  
-  // Récupérer les notifications de l'utilisateur connecté
-  getNotifications: async (req, res) => {
-    try {
-      const notifications = await Notification.find({ 
-        destinataire: req.user._id 
-      }).sort({ createdAt: -1 });
-      
-      res.json(notifications);
-    } catch (error) {
-      res.status(500).json({ 
-        message: 'Erreur lors de la récupération des notifications', 
-        error: error.message 
+// إنشاء إشعار جديد
+exports.createNotification = async (req, res) => {
+  try {
+    const { destinataire, titre, message, type, employe, details } = req.body;
+
+    if (!destinataire || !titre || !message || !type) {
+      return res.status(400).json({
+        message: 'جميع الحقول مطلوبة: destinataire, titre, message, type',
       });
     }
-  },
 
-  // Marquer une notification comme lue
-  marquerCommeLue: async (req, res) => {
-    try {
-      const notification = await Notification.findOne({
-        _id: req.params.id,
-        destinataire: req.user._id
-      });
+    const notification = new Notification({
+      destinataire,
+      titre,
+      message,
+      type,
+      employe,
+      details,
+    });
 
-      if (!notification) {
-        return res.status(404).json({ 
-          message: 'Notification non trouvée' 
-        });
-      }
+    await notification.save();
 
-      notification.lue = true;
-      await notification.save();
-
-      res.json({ 
-        message: 'Notification marquée comme lue', 
-        notification 
-      });
-    } catch (error) {
-      res.status(500).json({ 
-        message: 'Erreur lors de la mise à jour de la notification', 
-        error: error.message 
-      });
-    }
-  },
-
-  // Supprimer une notification
-  supprimerNotification: async (req, res) => {
-    try {
-      const notification = await Notification.findOneAndDelete({
-        _id: req.params.id,
-        destinataire: req.user._id
-      });
-
-      if (!notification) {
-        return res.status(404).json({ 
-          message: 'Notification non trouvée' 
-        });
-      }
-
-      res.json({ 
-        message: 'Notification supprimée avec succès' 
-      });
-    } catch (error) {
-      res.status(500).json({ 
-        message: 'Erreur lors de la suppression de la notification', 
-        error: error.message 
-      });
-    }
+    res.status(201).json({
+      message: 'تم إنشاء الإشعار بنجاح',
+      notification,
+    });
+  } catch (error) {
+    console.error('خطأ في إنشاء الإشعار:', error);
+    res.status(500).json({
+      message: 'خطأ في إنشاء الإشعار',
+      error: error.message,
+    });
   }
 };
 
-module.exports = notificationController;
+// جلب الإشعارات
+exports.getNotifications = async (req, res) => {
+  try {
+    const { destinataire } = req.query;
+
+    if (!['admin', 'medecin', 'employe'].includes(destinataire)) {
+      return res.status(400).json({ message: 'الدور غير صالح' });
+    }
+
+    const notifications = await Notification.find({
+      destinataire,
+      archived: false,
+    })
+      .sort({ dateCreation: -1 })
+      .populate('employe', 'nom prenom matricule');
+
+    res.json(notifications);
+  } catch (error) {
+    console.error('خطأ في جلب الإشعارات:', error);
+    res.status(500).json({ message: 'خطأ في الخادم' });
+  }
+};
+
+// جلب الإشعارات حسب المستلم
+exports.getNotificationsByDestinataire = async (req, res) => {
+  try {
+    const { role } = req.params;
+    
+    const notifications = await Notification.find({
+      destinataire: role,
+      archived: false
+    }).sort({ dateCreation: -1 });
+    
+    res.json(notifications);
+  } catch (error) {
+    console.error('خطأ في جلب الإشعارات:', error);
+    res.status(500).json({ message: 'خطأ في الخادم' });
+  }
+};
+
+// تحديث إشعار كمقروء
+exports.marquerCommeLu = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const notification = await Notification.findByIdAndUpdate(
+      id,
+      { lu: true },
+      { new: true }
+    );
+
+    if (!notification) {
+      return res.status(404).json({ message: 'الإشعار غير موجود' });
+    }
+
+    res.status(200).json({
+      message: 'تم تحديث حالة الإشعار بنجاح',
+      notification,
+    });
+  } catch (error) {
+    console.error('خطأ في تحديث الإشعار:', error);
+    res.status(500).json({
+      message: 'خطأ في تحديث الإشعار',
+      error: error.message,
+    });
+  }
+};
+
+// حذف إشعار
+exports.deleteNotification = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const notification = await Notification.findByIdAndDelete(id);
+    
+    if (!notification) {
+      return res.status(404).json({ message: 'الإشعار غير موجود' });
+    }
+    
+    res.status(200).json({
+      message: 'تم حذف الإشعار بنجاح'
+    });
+  } catch (error) {
+    console.error('خطأ في حذف الإشعار:', error);
+    res.status(500).json({
+      message: 'خطأ في حذف الإشعار',
+      error: error.message,
+    });
+  }
+};
+
+// إنشاء إشعار (للاستخدام الداخلي من قبل وحدات أخرى)
+exports.creerNotification = async (notificationData) => {
+  try {
+    if (!notificationData.message || !notificationData.destinataire) {
+      throw new Error('البيانات غير كاملة');
+    }
+
+    const nouvelleNotification = new Notification({
+      titre: notificationData.titre || 'إشعار جديد',
+      type: notificationData.type || 'INFO',
+      message: notificationData.message,
+      destinataire: notificationData.destinataire,
+      details: notificationData.details || {},
+      dateCreation: new Date(),
+      lu: false,
+    });
+
+    const notificationSauvegardee = await nouvelleNotification.save();
+    console.log('تم إنشاء الإشعار بنجاح:', notificationSauvegardee);
+    return notificationSauvegardee;
+  } catch (error) {
+    console.error('خطأ في إنشاء الإشعار:', error);
+    throw error;
+  }
+};
+
+// Make sure to export all functions
+module.exports = exports;
