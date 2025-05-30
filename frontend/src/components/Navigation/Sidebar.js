@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
-  FaHeartbeat, FaChartBar, FaUserMd, FaUsers,
+   FaChartBar, FaUserMd, FaUsers,
   FaCalendarAlt, FaUser, FaSignOutAlt, FaBars,
   FaStethoscope, FaBell, FaHistory
 } from 'react-icons/fa';
@@ -48,8 +48,8 @@ const Sidebar = () => {
 
       <div className={`sidebar ${isMobile && isOpen ? 'open' : ''}`}>
         <div className="sidebar-logo">
-          <div className="sidebar-logo-icon health-icon">
-            <FaHeartbeat />
+          <div className="sidebar-logo-icon">
+            <img src='/logo-medi.png' alt="Logo" />
           </div>
           <h2>MedTrack</h2>
         </div>

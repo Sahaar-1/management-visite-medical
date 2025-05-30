@@ -22,58 +22,61 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100px;
-  padding: 1.5rem;
+  height: 100px; /* Plus grand pour accommoder le logo plus grand */
+  padding: 1rem;
   border-bottom: 2px solid rgba(126, 174, 148, 0.15);
   background: linear-gradient(135deg, #7eae94 0%, #4ba262 100%);
   color: white;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   overflow: hidden;
   position: relative;
 }
 
-.sidebar-logo::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  pointer-events: none;
-}
-
-.sidebar-logo-icon {
-  font-size: 2.8rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 65px;
-  height: 65px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%);
-  border-radius: 20px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  flex-shrink: 0;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+.sidebar-logo h2 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0.5rem 0 0 0; /* Marge en haut pour séparer du logo */
+  text-align: center;
+  letter-spacing: 1px;
+  color: white; /* Texte en blanc */
+  white-space: nowrap;
   position: relative;
   z-index: 2;
-  margin-bottom: 0.5rem;
 }
 
-.sidebar-logo-icon:hover {
+
+
+.sidebar-logo-icon img {
+  width: 90px; /* Encore plus grand */
+  height: 45px;
+  object-fit: contain;
+}
+
+/* Ajustement pour la sidebar réduite */
+.sidebar:not(:hover) .sidebar-logo h2 {
+  opacity: 1; /* Toujours visible même en mode réduit */
+  font-size: 0.8rem; /* Plus petit en mode réduit */
+  margin-top: 0.3rem;
+}
+
+.sidebar:hover .sidebar-logo h2 {
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+}
+
+.sidebar-logo:hover {
   transform: scale(1.1);
   background: rgba(255, 255, 255, 0.3);
 }
 
 .sidebar-logo h2 {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 800;
   margin: 0;
   text-align: center;
   letter-spacing: 1px;
-  opacity: 1;
-  transform: translateY(0);
+  opacity: 0;
+  transform: translateX(20px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   position: relative;
@@ -424,9 +427,9 @@
   }
 }
 
-.health-icon {
-  animation: pulse 2s infinite ease-in-out;
-}
+
+
+
 
 /* Ajoutez ces styles pour le bouton de thème */
 .theme-toggle-container {
@@ -543,10 +546,6 @@
   opacity: 0;
 }
 
-.sidebar-logo {
-  animation: fadeInUp 0.6s ease forwards;
-  opacity: 0;
-}
 
 /* Notification Badge Animation */
 @keyframes notificationPulse {
@@ -615,3 +614,27 @@
   background: var(--gradient-primary);
   opacity: 1;
 }
+
+/* Ajuster la taille de l'image du logo */
+.sidebar-logo-icon img {
+  width: 80px; /* Augmenté de 30px à 35px */
+  height: 55px; /* Augmenté de 30px à 35px */
+  object-fit: contain;
+}
+
+/* Ajuster également le conteneur de l'icône pour qu'il s'adapte à la nouvelle taille */
+.sidebar-logo-icon {
+  font-size: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 55px; /* Augmenté de 50px à 55px */
+  height: 55px; /* Augmenté de 50px à 55px */
+  background: none;
+  flex-shrink: 0;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 2;
+  margin-bottom: 0.25rem;
+}
+
