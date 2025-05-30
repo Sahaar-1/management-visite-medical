@@ -4,7 +4,7 @@ import api from '../../utils/axiosConfig';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import './HistoriqueConsultations.css';
-import { FaEye, FaFilter, FaCalendarAlt, FaUserMd, FaIdCard, FaClipboardCheck } from 'react-icons/fa';
+import { FaFilter, FaCalendarAlt, FaUserMd, FaIdCard, FaClipboardCheck } from 'react-icons/fa';
 
 const HistoriqueConsultations = () => {
   const [historique, setHistorique] = useState([]);
@@ -280,12 +280,13 @@ const HistoriqueConsultations = () => {
                          item.statut === 'NON_FAITE' ? 'Non Fait' : 'Non présenté'}
                       </span>
                     </td>
-                    <td>
+                    <td className="actions-cell">
                       <button
-                        className="btn-details"
+                        className="btn-action"
                         onClick={() => handleViewDetails(item)}
+                        title="Voir les détails"
                       >
-                        <FaEye /> Détails
+                        <i className="fas fa-eye"></i>
                       </button>
                     </td>
                   </tr>

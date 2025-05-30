@@ -51,7 +51,7 @@ const Sidebar = () => {
           <div className="sidebar-logo-icon health-icon">
             <FaHeartbeat />
           </div>
-          <h2>MedVisit</h2>
+          <h2>MedTrack</h2>
         </div>
 
         <div className="sidebar-user">

@@ -1,17 +1,55 @@
+/* Importer les styles modernes */
+@import '../Admin/ModernDashboard.css';
+
+/* Utiliser les mêmes variables de couleur que le reste de l'application */
 :root {
-  --primary-color: #2ecc71;
-  --secondary-color: #27ae60;
-  --light-gray: #f8f9fa;
-  --medium-gray: #6c757d;
-  --dark-gray: #343a40;
-  --white: #ffffff;
-  --border-color: #e0e0e0;
-  --shadow-color: rgba(0, 0, 0, 0.05);
-  --hover-shadow: rgba(0, 0, 0, 0.1);
+  /* Gradient Colors - Identiques à ModernDashboard.css */
+  --gradient-primary: linear-gradient(135deg, #7eae94 0%, #4ba262 100%);
+  --gradient-secondary: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  --gradient-accent: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  --gradient-success: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+  --gradient-warning: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);
+  --gradient-danger: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  --gradient-info: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+
+  /* Soft Colors */
+  --soft-teal: #a3bffa;
+  --soft-purple: #d4a4eb;
+  --soft-pink: #f8c4b4;
+  --soft-blue: #74b9ff;
+  --soft-green: #84fab0;
+  --soft-orange: #ffecd2;
+
+  /* Base Colors */
+  --primary-color: #667eea;
+  --secondary-color: #764ba2;
+  --accent-color: #74b9ff;
+  --success-color: #84fab0;
+  --warning-color: #ffa726;
+  --danger-color: #ff6b6b;
+
+  /* Background Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: rgba(255, 255, 255, 0.9);
+  --bg-glass: rgba(255, 255, 255, 0.25);
+
+  /* Text Colors */
+  --text-primary: #2d3748;
+  --text-secondary: #718096;
+  --text-tertiary: #a0aec0;
+  --text-white: #ffffff;
+
+  /* Border & Shadow */
+  --border-color: rgba(255, 255, 255, 0.3);
+  --border-soft: rgba(116, 185, 255, 0.2);
+  --shadow-soft: 0 8px 32px rgba(31, 38, 135, 0.15);
+  --shadow-hover: 0 12px 40px rgba(31, 38, 135, 0.25);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .container {
-  background-color: var(--light-gray);
+  background-color: var(--bg-primary);
   min-height: 100vh;
   padding: 2rem;
 }
@@ -19,26 +57,42 @@
 .profile-header {
   display: flex;
   align-items: center;
-  background-color: var(--white);
+  background-color: var(--bg-glass);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
   padding: 1.5rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 8px var(--shadow-color);
+  border-radius: 20px;
+  box-shadow: var(--shadow-card);
   margin-bottom: 2rem;
   border-left: 4px solid var(--primary-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  border-radius: 20px 20px 0 0;
 }
 
 .profile-icon {
   font-size: 3rem;
-  color: var(--medium-gray);
+  color: var(--text-white);
   margin-right: 1.5rem;
-  background-color: var(--light-gray);
+  background: var(--gradient-primary);
   width: 80px;
   height: 80px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--border-color);
+  border: 2px solid var(--bg-primary);
+  box-shadow: var(--shadow-soft);
 }
 
 .profile-icon i {
@@ -48,13 +102,13 @@
 .user-name {
   font-size: 1.8rem;
   font-weight: 700;
-  color: var(--dark-gray);
+  color: var(--text-primary);
   margin: 0;
 }
 
 .user-role {
   font-size: 1rem;
-  color: var(--medium-gray);
+  color: var(--text-secondary);
   margin-top: 0.25rem;
   display: flex;
   align-items: center;
@@ -67,23 +121,36 @@
 
 .profile-card {
   border: none;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px var(--shadow-color);
-  background-color: var(--white);
-  transition: all 0.3s ease;
+  border-radius: 20px;
+  box-shadow: var(--shadow-card);
+  background-color: var(--bg-secondary);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
+  position: relative;
 }
 
 .profile-card:hover {
-  box-shadow: 0 6px 12px var(--hover-shadow);
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+.profile-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  border-radius: 20px 20px 0 0;
 }
 
 .card-header {
-  background-color: var(--white);
+  background-color: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   padding: 1.25rem;
   font-weight: 600;
-  color: var(--dark-gray);
+  color: var(--text-primary);
   display: flex;
   align-items: center;
 }
@@ -105,23 +172,24 @@
 }
 
 .alert-custom {
-  border-radius: 0.25rem;
+  border-radius: 10px;
   padding: 1rem;
   margin-bottom: 1.5rem;
   font-size: 0.95rem;
   border-left: 4px solid;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .alert-custom.alert-success {
-  background-color: rgba(46, 204, 113, 0.1);
-  border-left-color: var(--primary-color);
-  color: var(--secondary-color);
+  background-color: rgba(132, 250, 176, 0.1);
+  border-left-color: var(--success-color);
+  color: #2a9d8f;
 }
 
 .alert-custom.alert-danger {
-  background-color: rgba(231, 76, 60, 0.1);
-  border-left-color: #e74c3c;
-  color: #c0392b;
+  background-color: rgba(255, 107, 107, 0.1);
+  border-left-color: var(--danger-color);
+  color: #e63946;
 }
 
 .form-group {
@@ -130,7 +198,7 @@
 
 .form-label {
   font-weight: 500;
-  color: var(--dark-gray);
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
@@ -144,42 +212,44 @@
 
 .form-control-custom {
   border: 1px solid var(--border-color);
-  border-radius: 0.25rem;
+  border-radius: 10px;
   padding: 0.75rem 1rem;
   font-size: 1rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  background-color: var(--white);
+  transition: all 0.3s ease;
+  background-color: var(--bg-secondary);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
 }
 
 .form-control-custom:focus {
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 0.2rem rgba(46, 204, 113, 0.25);
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
   outline: none;
 }
 
 .form-control-custom:disabled {
-  background-color: var(--light-gray);
-  color: var(--medium-gray);
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
   border: 1px solid var(--border-color);
 }
 
 .form-text {
   font-size: 0.85rem;
-  color: var(--medium-gray);
+  color: var(--text-secondary);
   margin-top: 0.5rem;
 }
 
 .user-info {
-  background-color: var(--light-gray);
+  background-color: var(--bg-tertiary);
   padding: 1rem;
-  border-radius: 0.25rem;
+  border-radius: 10px;
   margin-bottom: 1rem;
+  box-shadow: var(--shadow-soft);
 }
 
 .user-info p {
   margin: 0;
   font-size: 0.95rem;
-  color: var(--dark-gray);
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   margin-bottom: 0.5rem;
@@ -190,7 +260,7 @@
 }
 
 .user-info p strong {
-  color: var(--dark-gray);
+  color: var(--text-primary);
   margin-right: 0.5rem;
 }
 
@@ -201,27 +271,76 @@
 }
 
 .btn-custom {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
+  background: var(--gradient-primary);
+  border: none;
   padding: 0.75rem 1.5rem;
   font-weight: 500;
   font-size: 1rem;
-  border-radius: 0.25rem;
+  border-radius: 10px;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white;
+  box-shadow: var(--shadow-soft);
 }
 
 .btn-custom:hover {
-  background-color: var(--secondary-color);
-  border-color: var(--secondary-color);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3);
+  box-shadow: var(--shadow-hover);
 }
 
 .btn-icon {
   margin-right: 0.5rem;
+}
+
+/* Button Icon Only - Modern Style */
+.btn-icon-only {
+  background-color: var(--text-secondary);
+  border: none;
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-soft);
+}
+
+.btn-icon-only:hover {
+  background-color: var(--text-primary);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-hover);
+}
+
+.btn-icon-only:focus {
+  box-shadow: 0 0 0 0.2rem rgba(113, 128, 150, 0.25);
+}
+
+.btn-icon-only i {
+  font-size: 1rem;
+}
+
+/* Save Button - Modern Style */
+.btn-save-gray {
+  background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-soft);
+}
+
+.btn-save-gray:hover {
+  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
 }
 
 @media (max-width: 768px) {

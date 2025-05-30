@@ -153,46 +153,37 @@
   text-align: center;
 }
 
-/* Flat Table styling */
+/* Simple White Table styling */
 .rendez-vous-table {
   background: #ffffff;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  margin-top: 0;
-  border: 1px solid #e2e8f0;
+  width: 100%;
   border-collapse: separate;
   border-spacing: 0;
 }
 
-.rendez-vous-table thead {
-  background: #4ba262;
-}
-
 .rendez-vous-table th {
-  font-weight: 600;
+  background: #ffffff;
   padding: 1rem;
   text-align: center;
-  font-size: 0.9rem;
-  color: white;
+  font-weight: 600;
+  color: #2d3748;
   border: none;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  background: #4ba262;
+  font-size: 0.9rem;
 }
 
 .rendez-vous-table th:first-child {
-  border-radius: 8px 0 0 0;
+  border-radius: 0;
 }
 
 .rendez-vous-table th:last-child {
-  border-radius: 0 8px 0 0;
+  border-radius: 0;
 }
 
 .rendez-vous-table tbody tr {
   background: #ffffff;
   transition: all 0.2s ease;
-  border-bottom: 1px solid #f1f5f9;
 }
 
 .rendez-vous-table tbody tr:hover {
@@ -200,16 +191,13 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.rendez-vous-table tbody tr:last-child {
-  border-bottom: none;
-}
-
 .rendez-vous-table td {
   padding: 1rem;
+  border: none;
   vertical-align: middle;
   font-size: 0.9rem;
   color: #2d3748;
-  border: none;
+  text-align: center;
 }
 
 

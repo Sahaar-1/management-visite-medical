@@ -3,7 +3,6 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { useSecureNavigation } from './hooks/useSecureNavigation';
 import Sidebar from './components/Navigation/Sidebar';
-import './styles/App.css';
 
 function App() {
   const { user } = useAuth();

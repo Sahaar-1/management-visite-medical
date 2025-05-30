@@ -36,7 +36,7 @@ const Profil = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       // Validation du téléphone
       if (formData.telephone && !/^[0-9]{10}$/.test(formData.telephone)) {
@@ -97,12 +97,12 @@ const Profil = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    
+
     // Effacer le message d'erreur
     setMessage('');
   };
@@ -141,20 +141,15 @@ const Profil = () => {
             <i className="bi bi-pencil-square card-header-icon"></i>
             <h3 className="d-inline">Mon Profil</h3>
           </div>
-          <Button 
-            variant={isEditing ? "secondary" : "primary"} 
+          <Button
+            variant="outline-secondary"
             onClick={toggleEdit}
+            className="btn-icon-only"
           >
             {isEditing ? (
-              <>
-                <i className="bi bi-x-circle me-2"></i>
-                Annuler
-              </>
+              <i className="bi bi-x-circle"></i>
             ) : (
-              <>
-                <i className="bi bi-pencil me-2"></i>
-                Modifier
-              </>
+              <i className="bi bi-pencil"></i>
             )}
           </Button>
         </Card.Header>
@@ -311,7 +306,7 @@ const Profil = () => {
             )}
 
             {isEditing && (
-              <Button type="submit" variant="success" className="w-100">
+              <Button type="submit" variant="outline-secondary" className="w-100 btn-save-gray">
                 <i className="bi bi-check-circle me-2"></i>
                 Enregistrer les modifications
               </Button>

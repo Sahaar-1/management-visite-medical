@@ -5,7 +5,6 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { router } from './router';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './styles/index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
