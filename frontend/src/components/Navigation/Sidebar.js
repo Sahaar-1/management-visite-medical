@@ -14,7 +14,8 @@ const Sidebar = () => {
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isOpen, setIsOpen] = useState(false);
-
+  const [isExpanded, setIsExpanded] = useState(false);
+  
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -32,6 +33,10 @@ const Sidebar = () => {
     setIsOpen(!isOpen);
   };
 
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   // Get first letter of first and last name for avatar
   const getInitials = () => {
     if (!user?.nom || !user?.prenom) return 'U';
@@ -46,7 +51,10 @@ const Sidebar = () => {
         </button>
       )}
 
-      <div className={`sidebar ${isMobile && isOpen ? 'open' : ''}`}>
+      <div 
+        className={`sidebar ${isMobile && isOpen ? 'open' : ''} ${isExpanded ? 'expanded' : ''}`}
+        onClick={!isMobile ? toggleExpand : undefined}
+      >
         <div className="sidebar-logo">
           <div className="sidebar-logo-icon">
             <img src='/logo-medi.png' alt="Logo" />

@@ -302,10 +302,10 @@
 .consultation-btn-small {
   background: var(--gradient-primary) !important;
   border: none !important;
-  border-radius: 15px !important;
-  padding: 0.75rem 1.5rem !important;
+  border-radius: 10px !important; /* Réduit de 15px à 10px */
+  padding: 0.4rem 0.8rem !important; /* Réduit de 0.75rem 1.5rem à 0.4rem 0.8rem */
   font-weight: 600 !important;
-  font-size: 1rem !important;
+  font-size: 0.85rem !important; /* Réduit de 1rem à 0.85rem */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   box-shadow: var(--shadow-card) !important;
   display: inline-flex !important;
@@ -317,7 +317,7 @@
 
 .consultation-btn-small:hover:not(:disabled) {
   background: var(--gradient-secondary) !important;
-  transform: translateY(-2px) !important;
+  transform: translateY(-1px) !important; /* Réduit de -2px à -1px */
   box-shadow: var(--shadow-hover) !important;
 }
 

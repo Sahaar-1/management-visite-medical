@@ -1,5 +1,18 @@
 {
-  "dependencies": {
-    "react-pro-sidebar": "^1.1.0"
+  "name": "medical-visits-management",
+  "version": "1.0.0",
+  "description": "Medical Visits Management System - Full Stack Application",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm start",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm run build && serve -s frontend/build",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "test": "concurrently \"cd backend && npm test\" \"cd frontend && npm test\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }

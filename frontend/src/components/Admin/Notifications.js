@@ -41,9 +41,40 @@ const AdminNotifications = () => {
     return date.toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' });
   };
 
-  const handleSelectNotification = (notification) => {
+  const handleSelectNotification = async (notification) => {
     setSelectedNotification(notification);
     setShowModal(true);
+
+    // Marquer la notification comme lue si elle ne l'est pas déjà
+    if (!notification.lu) {
+      await marquerCommeLu(notification._id);
+    }
+  };
+
+  const marquerCommeLu = async (notificationId) => {
+    try {
+      await api.put(`/notifications/${notificationId}/marquer-comme-lu`);
+
+      // Mettre à jour l'état local pour refléter le changement immédiatement
+      setNotifications(prevNotifications =>
+        prevNotifications.map(notif =>
+          notif._id === notificationId
+            ? { ...notif, lu: true }
+            : notif
+        )
+      );
+
+      // Mettre à jour la notification sélectionnée si c'est celle-ci
+      setSelectedNotification(prevSelected =>
+        prevSelected && prevSelected._id === notificationId
+          ? { ...prevSelected, lu: true }
+          : prevSelected
+      );
+
+    } catch (err) {
+      console.error('Erreur lors du marquage comme lu:', err);
+      // Ne pas afficher d'erreur à l'utilisateur pour cette action silencieuse
+    }
   };
 
   const handleCloseModal = () => {
@@ -62,6 +93,35 @@ const AdminNotifications = () => {
     } catch (err) {
       console.error('Erreur lors de la suppression de la notification:', err);
       showAlert('Impossible de supprimer la notification.', 'danger');
+    }
+  };
+
+  const marquerToutesCommeLues = async () => {
+    try {
+      const notificationsNonLues = notifications.filter(notif => !notif.lu);
+
+      if (notificationsNonLues.length === 0) {
+        showAlert('Toutes les notifications sont déjà lues.', 'info');
+        return;
+      }
+
+      // Marquer toutes les notifications non lues
+      const promises = notificationsNonLues.map(notif =>
+        api.put(`/notifications/${notif._id}/marquer-comme-lu`)
+      );
+
+      await Promise.all(promises);
+
+      // Mettre à jour l'état local
+      setNotifications(prevNotifications =>
+        prevNotifications.map(notif => ({ ...notif, lu: true }))
+      );
+
+      showAlert(`${notificationsNonLues.length} notification(s) marquée(s) comme lue(s).`, 'success');
+
+    } catch (err) {
+      console.error('Erreur lors du marquage de toutes les notifications:', err);
+      showAlert('Erreur lors du marquage des notifications.', 'danger');
     }
   };
 
@@ -100,7 +160,19 @@ const AdminNotifications = () => {
           <Col md={8} lg={6}>
             <div className="notifications-list-card">
               <div className="card-header">
-                <h4>Liste des notifications</h4>
+                <div className="d-flex justify-content-between align-items-center">
+                  <h4>Liste des notifications</h4>
+                  {notifications.some(notif => !notif.lu) && (
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={marquerToutesCommeLues}
+                    >
+                      <FaEnvelopeOpen className="me-1" />
+                      Tout marquer comme lu
+                    </Button>
+                  )}
+                </div>
               </div>
               <div className="card-body">
                 {notifications.length === 0 ? (
@@ -114,14 +186,15 @@ const AdminNotifications = () => {
                       <div
                         key={notification._id}
                         onClick={() => handleSelectNotification(notification)}
-                        className="notification-item"
+                        className={`notification-item ${notification.lu ? 'notification-read' : 'notification-unread'}`}
                       >
                         <div className="notification-icon">
                           {notification.lu ? <FaEnvelopeOpen /> : <FaEnvelope />}
                         </div>
                         <div className="notification-content">
                           <div className="notification-title">
-                            Consultation médicale
+                            {notification.titre || 'Consultation médicale'}
+                            {!notification.lu && <Badge bg="danger" className="ms-2">Nouveau</Badge>}
                           </div>
                           <div className="notification-date">{formatDate(notification.dateCreation)}</div>
                         </div>

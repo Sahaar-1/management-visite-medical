@@ -66,15 +66,37 @@ exports.getNotifications = async (req, res) => {
 exports.getNotificationsByDestinataire = async (req, res) => {
   try {
     const { role } = req.params;
-    
+
     const notifications = await Notification.find({
       destinataire: role,
       archived: false
     }).sort({ dateCreation: -1 });
-    
+
     res.json(notifications);
   } catch (error) {
     console.error('خطأ في جلب الإشعارات:', error);
+    res.status(500).json({ message: 'خطأ في الخادم' });
+  }
+};
+
+// جلب عدد الإشعارات غير المقروءة
+exports.getUnreadNotificationsCount = async (req, res) => {
+  try {
+    const { destinataire } = req.query;
+
+    if (!['admin', 'medecin', 'employe'].includes(destinataire)) {
+      return res.status(400).json({ message: 'الدور غير صالح' });
+    }
+
+    const count = await Notification.countDocuments({
+      destinataire,
+      archived: false,
+      lu: false
+    });
+
+    res.json({ count });
+  } catch (error) {
+    console.error('خطأ في جلب عدد الإشعارات غير المقروءة:', error);
     res.status(500).json({ message: 'خطأ في الخادم' });
   }
 };

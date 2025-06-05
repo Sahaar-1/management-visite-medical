@@ -431,7 +431,63 @@
 
 
 
-/* Ajoutez ces styles pour le bouton de thème */
+/* Ajoutez ces styles à la fin du fichier */
+/* Style pour la sidebar réduite (icônes uniquement) avec largeur augmentée */
+.sidebar:not(.expanded) {
+  width: 100px; /* Augmenté de 80px à 100px pour plus d'espace */
+}
+
+.sidebar.expanded {
+  width: 280px;
+}
+
+/* Masquer le texte et les infos utilisateur quand la sidebar n'est pas étendue */
+.sidebar:not(.expanded) .sidebar-menu li a span,
+.sidebar:not(.expanded) .user-info,
+.sidebar:not(.expanded) .sidebar-logo h2 {
+  opacity: 0;
+  width: 0;
+  display: none;
+}
+
+/* Centrer les icônes quand la sidebar est réduite et augmenter leur taille */
+.sidebar:not(.expanded) .sidebar-menu li a {
+  justify-content: center;
+  padding: 1rem;
+}
+
+.sidebar:not(.expanded) .sidebar-menu li a svg {
+  margin-right: 0;
+  font-size: 1.6rem; /* Augmenté de 1.3rem à 1.6rem */
+  min-width: 32px; /* Augmenté de 24px à 32px */
+}
+
+/* Ajuster l'affichage de l'utilisateur en mode réduit */
+.sidebar:not(.expanded) .sidebar-user {
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Ajuster la taille de l'avatar utilisateur en mode réduit */
+.sidebar:not(.expanded) .user-avatar {
+  width: 60px; /* Augmenté de 50px à 60px */
+  height: 60px; /* Augmenté de 50px à 60px */
+  font-size: 1.6rem; /* Augmenté de 1.4rem à 1.6rem */
+}
+
+/* Supprimer les styles de survol qui étendent la sidebar */
+.sidebar:not(:hover) {
+  /* Supprimer les styles qui réduisent la largeur au survol */
+}
+
+/* Ajuster la transition pour une expérience fluide */
+.sidebar,
+.sidebar-menu li a span,
+.user-info,
+.sidebar-logo h2 {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .theme-toggle-container {
   display: flex;
   align-items: center;
