@@ -40,8 +40,4 @@ npm install
 - Backend: \`npm run start:backend\`
 - Frontend: \`npm run start:frontend\`
 
-## Contributeurs
-- [Votre Nom]
 
-## Licence
-[À définir]
